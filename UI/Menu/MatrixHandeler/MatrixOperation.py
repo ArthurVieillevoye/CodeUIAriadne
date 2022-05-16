@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import ttk
 import numpy as np
+from EigenComputation import Householder
 
 class MatrixMult:
     def __init__(self, root, matrixSelector, textArea, matrixMemory):
@@ -14,36 +15,47 @@ class MatrixMult:
         self.matrixMemory = matrixMemory
 
     def addMultiplicationWindow(self):
-        self.newWindow = Toplevel(master=self.root)
+        frame = Frame(self.root)
 
-        label = Label(self.newWindow, text="Select Matrix")
+        label = Label(frame, text="Select Matrix")
         label.grid(row=0, column=0, columnspan=2)
 
         var = IntVar()
         self.options = self.getListOfMatrices()
         # print(type(self.options))
-        self.comboBox = ttk.Combobox(self.newWindow, value=self.options)
+        self.comboBox = ttk.Combobox(frame, value=self.options)
         self.comboBox.bind("<<ComboboxSelected>>", self.matrixSelected)
         self.comboBox.grid(row=1, column=0, columnspan=2)
 
-        self.functionEntry = Entry(self.newWindow, width=50)
+        self.functionEntry = Entry(frame, width=50)
         self.functionEntry.grid(row=2, column=0, columnspan=2)
         self.functionEntry.config(state='disabled')
 
-        transposeButton = Button(self.newWindow, text='Transpose', width=10, padx=5, pady=5, command=self.transpose)
+        transposeButton = Button(frame, text='Transpose', width=10, padx=5, pady=5, command=self.transpose)
         transposeButton.grid(row=3, column=0)
 
-        inverseButton = Button(self.newWindow, text='Inverse', width=10, padx=5, pady=5, command=self.inverse)
+        inverseButton = Button(frame, text='Inverse', width=10, padx=5, pady=5, command=self.inverse)
         inverseButton.grid(row=3, column=1)
 
-        addButton = Button(self.newWindow, text='+', width=10, padx=5, pady=5, command=self.addition)
+        addButton = Button(frame, text='+', width=10, padx=5, pady=5, command=self.addition)
         addButton.grid(row=4, column=0)
 
-        multButton = Button(self.newWindow, text='*', width=10, padx=5, pady=5, command=self.multiplication)
+        multButton = Button(frame, text='*', width=10, padx=5, pady=5, command=self.multiplication)
         multButton.grid(row=4, column=1)
 
-        eqButton = Button(self.newWindow, text='=', width=10, padx=5, pady=5, command=self.equal)
-        eqButton.grid(row=5, column=0, columnspan = 2)
+        buttonWrite = Button(frame, text="Eigen", width=10, padx=5, pady=5, command=lambda: self.printEigen(var.get()))
+        buttonWrite.grid(row=5, column=0)
+
+        eqButton = Button(frame, text='=', width=10, padx=5, pady=5, command=self.equal)
+        eqButton.grid(row=5, column=1)
+
+
+        frame.grid(row=0, column=1, sticky=N + S + E + W)
+
+    def printEigen(self, i):
+        eigen = Householder.findEigen(self.matrices[i][0])
+        sentence = "eigenvalues : " + str(eigen[0]) + '\neigenVectors : ' + str(eigen[1]) + '\n'
+        self.textArea.printInOutputArea(sentence)
 
     def matrixSelected(self, event):
         self.text = self.allMyMmatrices[self.options.index(self.comboBox.get())][1]

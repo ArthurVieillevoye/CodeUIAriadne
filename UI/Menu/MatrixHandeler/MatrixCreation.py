@@ -26,33 +26,31 @@ class MatrixCreationWindow:
         Create a new window for the user to enter the matrix of its choice.
         """
 
-        self.window = Toplevel(self.root)
-
         # self.buttonWrite.grid_remove()
         # self.buttonMatrixFromFile.grid_remove()
 
         # Creates the labels and the entry boxes for the row and column numbers.
 
-        label1 = Label(self.window, text="row")
-        label1.grid(row=0, column=0)
-        self.e1 = Entry(self.window, width=10, borderwidth=5)
-        self.e1.grid(row=0, column=1)
+        label1 = Label(self.root, text="row")
+        label1.grid(row=0, column=1)
+        self.e1 = Entry(self.root, width=10, borderwidth=5)
+        self.e1.grid(row=0, column=2)
 
-        label2 = Label(self.window, text="Column")
-        label2.grid(row=1, column=0)
-        self.e2 = Entry(self.window, width=10, borderwidth=5)
-        self.e2.grid(row=1, column=1)
+        label2 = Label(self.root, text="Column")
+        label2.grid(row=1, column=1)
+        self.e2 = Entry(self.root, width=10, borderwidth=5)
+        self.e2.grid(row=1, column=2)
 
-        label3 = Label(self.window, text="Name")
-        label3.grid(row=2, column=0)
-        self.e3 = Entry(self.window, width=10, borderwidth=5)
-        self.e3.grid(row=2, column=1)
+        label3 = Label(self.root, text="Name")
+        label3.grid(row=2, column=1)
+        self.e3 = Entry(self.root, width=10, borderwidth=5)
+        self.e3.grid(row=2, column=2)
 
         # self.e1.bind_all('<Return>', lambda event: self.updateMatrixWindow)
         # self.e2.bind_all('<Return>', lambda event: self.updateMatrixWindow)
 
-        buttonCreateMatrix = Button(self.window, text="Enter Size", padx=5, pady=5, command=self.updateMatrixWindow)
-        buttonCreateMatrix.grid(row=0, column=2, rowspan=3)
+        buttonCreateMatrix = Button(self.root, text="Enter Size", padx=5, pady=5, command=self.updateMatrixWindow)
+        buttonCreateMatrix.grid(row=0, column=3, sticky="ew")
 
     def updateMatrixWindow(self):
         # Enter the column numbers.
@@ -63,38 +61,38 @@ class MatrixCreationWindow:
             self.col = int(self.e2.get())
 
         # Delete all the elements previously present on the grid.
-        for label in self.window.grid_slaves():
-            if int(label.grid_info()["row"]) > 2:
+        for label in self.root.grid_slaves():
+            if int(label.grid_info()["column"]) > 3:
                 label.destroy()
 
         for c in range(self.col):
-            l = Label(self.window, text=str(c))
-            l.grid(row=3, column=c + 1)
+            l = Label(self.root, text=str(c))
+            l.grid(row=0, column=c + 5)
 
         # Show the row numbers
         self.entries = []
         for r in range(self.row):
             entries_row = []
-            l = Label(self.window, text=str(r))
-            l.grid(row=r + 4, column=0)
+            l = Label(self.root, text=str(r))
+            l.grid(row=r, column=4)
             # Add the entries for the values.
             for c in range(self.col):
-                singleEntry = Entry(self.window, width=5)  # 5 chars
+                singleEntry = Entry(self.root, width=5)  # 5 chars
                 try:
                     singleEntry.insert('end', self.matrix[r, c])
                 except:
                     singleEntry.insert('end', 0)
-                singleEntry.grid(row=r + 4, column=c + 1)
+                singleEntry.grid(row=r, column=c + 5)
                 entries_row.append(singleEntry)
             self.entries.append(entries_row)
 
-        saveButton = Button(self.window, text='Get Data', command=self.get_data)
-        saveButton.grid(row=self.row + 4, column=0)
+        saveButton = Button(self.root, text='Save matrix', padx=5, pady=5, command=self.get_data)
+        saveButton.grid(row=2, column=3, sticky="ew")
 
-        addRowButton = Button(self.window, text='+', command=self.addRow)
-        addRowButton.grid(row=self.row + 4, column=1)
-        addColButton = Button(self.window, text='+', command=self.addCol)
-        addColButton.grid(row=4, column=self.col + 2)
+        addRowButton = Button(self.root, text='+', command=self.addRow)
+        addRowButton.grid(row=self.row, column=5)
+        addColButton = Button(self.root, text='+', command=self.addCol)
+        addColButton.grid(row=0, column=self.col + 6)
 
     def addRow(self):
         self.matrix = self.get_data(True)
@@ -136,13 +134,14 @@ class MatrixCreationWindow:
             myArray = df.to_numpy()
             # print(myArray)
 
-            windowName = Toplevel(self.root)
-            label = Label(windowName, text="Name of the matrix:")
+            frame = Frame(self.root)
+
+            label = Label(frame, text="Name of the matrix:")
             label.grid(row=0, column=0)
-            e = Entry(windowName, width=30, borderwidth=5)
+            e = Entry(frame, width=30, borderwidth=5)
             e.grid(row=1, column=0)
 
-            button = Button(windowName, text='Get Data', command=lambda: self.matrixMemory.addMatrix(myArray, e.get()))
+            button = Button(frame, text='Get Data', command=lambda: self.matrixMemory.addMatrix(myArray, e.get()))
             button.grid(row=2, column=0)
 
-            # self.matrixMemory.addMatrix(myArray, e.get())
+            frame.grid(row=0, column=1)

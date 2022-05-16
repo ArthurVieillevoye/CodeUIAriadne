@@ -69,7 +69,7 @@ class MainTextArea:
         hScroll = Scrollbar(frame, orient="horizontal")
         hScroll.pack(side=BOTTOM, fill=X)
         # Create the text area
-        self.textOutput = Text(frame, undo=True, width=150, height=10, state=DISABLED,
+        self.textOutput = Text(frame, undo=True, width=125, height=10, state=DISABLED,
                          yscrollcommand=vScroll.set, xscrollcommand=hScroll.set)
         # TODO: add a horizontal scroll bar.
 

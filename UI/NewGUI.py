@@ -16,7 +16,7 @@ root.title('Ariadne')
 
 # Add the text area as well as the line count
 textArea = TextArea.MainTextArea()
-textArea.addTextArea(root)
+# textArea.addTextArea(root)
 textArea.addOutputArea(root)
 
 # Add the top menu with all the functionalities.
