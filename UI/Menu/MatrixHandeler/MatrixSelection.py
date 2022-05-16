@@ -116,7 +116,10 @@ class Matrices:
     def deleteMatrix(self, i):
         self.matrices.pop(i)
         self.writeOnFile(self.matrices)
-        #TODO: update the window
+        for el in self.frame.grid_slaves():
+            el.grid_forget()
+
+        self.seeMatrices()
 
     def seeMatrices(self):
         var = IntVar()
@@ -129,7 +132,7 @@ class Matrices:
         buttonSee = Button(window, text="See Matrix", width=10, padx=5, pady=5,
                            command=lambda: self.showSelectedMatrix(var.get()))
         buttonSee.pack(anchor=W)
-        buttonSee = Button(window, text="See Matrix", width=10, padx=5, pady=5, command=lambda: self.printMatrix(var.get()))
+        buttonSee = Button(window, text="Print Matrix", width=10, padx=5, pady=5, command=lambda: self.printMatrix(var.get()))
         buttonSee.pack(anchor=W)
         buttonCopy = Button(window, text="Copy Matrix", width=10, padx=5, pady=5, command=lambda: self.gtc(var.get()))
         buttonCopy.pack(anchor=W)
