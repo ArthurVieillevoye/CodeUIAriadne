@@ -65,6 +65,7 @@ class MatrixCreationWindow:
             if int(label.grid_info()["column"]) > 3:
                 label.destroy()
 
+        # Show the column numbers
         for c in range(self.col):
             l = Label(self.root, text=str(c))
             l.grid(row=0, column=c + 5)
