@@ -2,6 +2,7 @@ from tkinter import *
 import numpy as np
 import pandas as pd
 from tkinter import filedialog
+from pyariadne import *
 
 
 class MatrixCreationWindow:
@@ -116,9 +117,12 @@ class MatrixCreationWindow:
                 text = entry.get()
                 demand[r, c] = float(text)
 
+        demand = FloatDPApproximationMatrix(demand.tolist(), dp)
         if ret:
+            print(demand)
             return demand
         else:
+            print(demand)
             self.matrixMemory.addMatrix(demand, self.e3.get())
 
 

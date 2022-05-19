@@ -2,10 +2,8 @@ import numpy as np
 import math
 from Householder import *
 
-import pylab as p
 from numpy.linalg import eig
 from numpy.linalg import inv
-from numpy.linalg import qr
 
 
 def power_methods(A):
