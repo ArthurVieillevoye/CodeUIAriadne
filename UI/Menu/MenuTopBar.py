@@ -82,7 +82,7 @@ class MenuBar:
 
         fileMenu.bind_all("<Control-o>", self.openFile)
         fileMenu.bind_all("<Control-n>", self.new_file)
-        fileMenu.bind_all("<Control-+>", self.saveFileAs)
+        fileMenu.bind_all("<Control-a>", self.saveFileAs)
         fileMenu.bind_all("<Control-s>", self.save_file)
         root.config(menu=my_menu)
         # TODO add a Run button ??
