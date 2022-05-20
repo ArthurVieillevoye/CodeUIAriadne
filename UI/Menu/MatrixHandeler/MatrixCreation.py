@@ -138,24 +138,27 @@ class MatrixCreationWindow:
             try:
                 df = pd.read_excel(open_file_loc, header=None)
                 myArray = FloatDPApproximationMatrix(df.values.tolist(), dp)
-                print(myArray)
+                self.nameWindowForUploadedMatrices()
             except:
-                pass
-                # try:
-                #     df = pd.read_csv(open_file_loc)
-                #     myArray = FloatDPApproximationMatrix(df.values.tolist(), dp)
-                #     print(myArray)
-                # except:
-                #     self.textArea.printInOutputArea("Error: File is not in the correct format (.csv or .xcel)")
+                try:
+                    print('hello')
+                    df = pd.read_csv(open_file_loc, header=None, sep=';')
+                    print('df: ', df)
+                    myArray = FloatDPApproximationMatrix(df.values.tolist(), dp)
+                    self.nameWindowForUploadedMatrices()
+                except:
+                    self.textArea.printInOutputArea("Error: File is not in the correct format (.csv or .xcel)")
 
-            frame = Frame(self.root)
+    def nameWindowForUploadedMatrices(self):
 
-            label = Label(frame, text="Name of the matrix:")
-            label.grid(row=0, column=0)
-            e = Entry(frame, width=30, borderwidth=5)
-            e.grid(row=1, column=0)
+        frame = Frame(self.root)
 
-            button = Button(frame, text='Get Data', command=lambda: self.matrixMemory.addMatrix(myArray, e.get()))
-            button.grid(row=2, column=0)
+        label = Label(frame, text="Name of the matrix:")
+        label.grid(row=0, column=0)
+        e = Entry(frame, width=30, borderwidth=5)
+        e.grid(row=1, column=0)
 
-            frame.grid(row=0, column=1)
+        button = Button(frame, text='Get Data', command=lambda: self.matrixMemory.addMatrix(myArray, e.get()))
+        button.grid(row=2, column=0)
+
+        frame.grid(row=0, column=1)

@@ -12,8 +12,8 @@ def getMatrixFromFile():
     """
     open_file_loc = filedialog.askopenfilename()
     if open_file_loc != '':
-        df = pd.read_csv(open_file_loc, header=None)
-        print(df)
+        df = pd.read_csv(open_file_loc, header=None, sep=';')
+        print('df: ', df)
         myArray = FloatDPApproximationMatrix(df.values.tolist(), dp)
         print(myArray)
 
