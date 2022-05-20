@@ -137,19 +137,19 @@ class MatrixCreationWindow:
             print(open_file_loc)
             try:
                 df = pd.read_excel(open_file_loc, header=None)
-                myArray = FloatDPApproximationMatrix(df.values.tolist(), dp)
-                self.nameWindowForUploadedMatrices()
+                myMatrix = FloatDPApproximationMatrix(df.values.tolist(), dp)
+                self.nameWindowForUploadedMatrices(myMatrix)
             except:
                 try:
                     print('hello')
                     df = pd.read_csv(open_file_loc, header=None, sep=';')
                     print('df: ', df)
-                    myArray = FloatDPApproximationMatrix(df.values.tolist(), dp)
-                    self.nameWindowForUploadedMatrices()
+                    myMatrix = FloatDPApproximationMatrix(df.values.tolist(), dp)
+                    self.nameWindowForUploadedMatrices(myMatrix)
                 except:
                     self.textArea.printInOutputArea("Error: File is not in the correct format (.csv or .xcel)")
 
-    def nameWindowForUploadedMatrices(self):
+    def nameWindowForUploadedMatrices(self, myMatrix):
 
         frame = Frame(self.root)
 
