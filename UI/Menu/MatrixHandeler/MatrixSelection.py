@@ -1,11 +1,12 @@
 from tkinter import *
 import numpy as np
 import json
+from pyariadne import *
 
 
 class Matrices:
     def __init__(self, root, textArea):
-        self.matrices = self.readFromFile()
+        self.matrices = self.readDatabaseFromFile()
         self.root = root
         self.frame = Frame(self.root)
         self.textArea = textArea
@@ -17,42 +18,39 @@ class Matrices:
         self.root.clipboard_append(self.matrices[i][0])
 
     def addMatrix(self, matrix, name=''):
-        self.matrices.append((matrix,name))
+        self.matrices.append((matrix, name))
         self.writeOnFile(self.matrices)
 
     def getMatrices(self):
         return self.matrices
 
     def printMatrix(self, i):
-        sentence = "Matrix : " + self.matrices[i][1] + " = " + str(self.matrices[i][0]) +'\n'
+        sentence = "Matrix : " + self.matrices[i][1] + " = " + repr(self.matrices[i][0]) + '\n'
         self.textArea.printInOutputArea(sentence)
 
-    def writeOnFile(self,lst):
-        l = []
-        for el in lst:
-            l.append((el[0].tolist(), el[1]))
-        with open('data.json', 'w') as f:
-            json.dump(l, f)
+    def writeOnFile(self, lst):
+        with open('MatrixDatabase.txt', 'w') as fp:
+            fp.write('\n'.join('{};{}'.format(repr(x[0]), x[1]) for x in lst))
 
     # read the file
-    def readFromFile(self):
-        list2 = []
+    def readDatabaseFromFile(self):
+        mylist = []
         try:
-            with open('data.json') as f:
-                lst1 = [tuple(x) for x in json.load(f)]
-
-                for el in lst1:
-                    list2.append((np.array(el[0]), el[1]))
+            with open('MatrixDatabase.txt') as f:
+                for i in f:
+                    a, b = i.split(';')
+                    mylist.append((FloatDPApproximationMatrix(eval(a), dp), b))
+            print(type(mylist[0][0]))
         except:
             pass
-        return list2
-
+        return mylist
 
     def showSelectedMatrix(self, i):
         window = Frame(self.frame)
 
         matrix = self.matrices[i][0]
-        m,n = np.shape(matrix)
+        m, n = 0, 1
+        # m,n = np.shape(matrix)
         if self.histrow != int(m) or self.histcol != int(n):
             self.histrow = int(m)
             self.histcol = int(n)
@@ -87,8 +85,8 @@ class Matrices:
             self.entries.append(entries_row)
 
         saveButton = Button(window, text='save changes', padx=5, pady=5, command=lambda: self.get_data(i))
-        saveButton.grid(row=self.row+1, column=1, sticky="ew")
-        window.grid(row=0,column=1, sticky=N + S + E + W)
+        saveButton.grid(row=self.row + 1, column=1, sticky="ew")
+        window.grid(row=0, column=1, sticky=N + S + E + W)
 
         # addRowButton = Button(self.root, text='+', command=self.addRow)
         # addRowButton.grid(row=self.row, column=5)
@@ -127,16 +125,18 @@ class Matrices:
         for i in range(len(self.matrices)):
             text = self.matrices[i][1] + ': ' + str(np.shape(self.matrices[i][0]))
             Radiobutton(window, text=text, padx=20, variable=var, value=i).pack(anchor=W)
-            #TODO: Add the name of the matrix.
+            # TODO: Add the name of the matrix.
 
         buttonSee = Button(window, text="See Matrix", width=10, padx=5, pady=5,
                            command=lambda: self.showSelectedMatrix(var.get()))
         buttonSee.pack(anchor=W)
-        buttonSee = Button(window, text="Print Matrix", width=10, padx=5, pady=5, command=lambda: self.printMatrix(var.get()))
+        buttonSee = Button(window, text="Print Matrix", width=10, padx=5, pady=5,
+                           command=lambda: self.printMatrix(var.get()))
         buttonSee.pack(anchor=W)
         buttonCopy = Button(window, text="Copy Matrix", width=10, padx=5, pady=5, command=lambda: self.gtc(var.get()))
         buttonCopy.pack(anchor=W)
-        buttonCopy = Button(window, text="Delete Matrix", width=10, padx=5, pady=5, command=lambda: self.deleteMatrix(var.get()))
+        buttonCopy = Button(window, text="Delete Matrix", width=10, padx=5, pady=5,
+                            command=lambda: self.deleteMatrix(var.get()))
         buttonCopy.pack(anchor=W)
 
         window.grid(row=0, column=0, sticky=N + S + E + W)

@@ -35,7 +35,7 @@ class MenuWithButton:
         Call the matrixCreation object.
         Allow the user choose an excel file containing a matrix.
         """
-        m = MatrixCreation.MatrixCreationWindow(self.newMatrixFrame, matrixMemory=self.matrixMemory)
+        m = MatrixCreation.MatrixCreationWindow(self.newMatrixFrame,self.textArea, matrixMemory=self.matrixMemory)
         m.getMatrixFromFile()
 
     # def addMatrixWindow(self):
@@ -50,7 +50,7 @@ class MenuWithButton:
         """
         This methods creates the window on which the user can enter the size of the matrix he wants to enter.
         """
-        m = MatrixCreation.MatrixCreationWindow(self.newMatrixFrame, matrixMemory=self.matrixMemory)
+        m = MatrixCreation.MatrixCreationWindow(self.newMatrixFrame, self.textArea, matrixMemory=self.matrixMemory)
         m.addMatrixWindow()
 
 

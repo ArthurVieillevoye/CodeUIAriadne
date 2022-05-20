@@ -12,14 +12,15 @@ class MatrixCreationWindow:
     the matrix from a file.
     """
 
-    def __init__(self, root, row=0, col=0, matrixMemory=None):
+    def __init__(self, root, textArea, matrixMemory=None):
         self.entries = []
-        self.row = row
-        self.col = col
+        self.row = 0
+        self.col = 0
         self.root = root
         self.matrix = []
         self.histrow = 0
         self.histcol = 0
+        self.textArea = textArea
         self.matrixMemory = matrixMemory
 
     def addMatrixWindow(self):
@@ -132,12 +133,20 @@ class MatrixCreationWindow:
         Read this file and return the matrix contained into the .xcel file.s
         """
         open_file_loc = filedialog.askopenfilename()
-        if open_file_loc != '':
-            df = pd.read_excel(open_file_loc, header=None)
-            df.values
-            # print(df)
-            myArray = df.to_numpy()
-            # print(myArray)
+        if open_file_loc != '' or open_file_loc != '()':
+            print(open_file_loc)
+            try:
+                df = pd.read_excel(open_file_loc, header=None)
+                myArray = FloatDPApproximationMatrix(df.values.tolist(), dp)
+                print(myArray)
+            except:
+                pass
+                # try:
+                #     df = pd.read_csv(open_file_loc)
+                #     myArray = FloatDPApproximationMatrix(df.values.tolist(), dp)
+                #     print(myArray)
+                # except:
+                #     self.textArea.printInOutputArea("Error: File is not in the correct format (.csv or .xcel)")
 
             frame = Frame(self.root)
 
