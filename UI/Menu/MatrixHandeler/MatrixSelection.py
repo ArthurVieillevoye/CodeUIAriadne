@@ -18,8 +18,11 @@ class Matrices:
         self.root.clipboard_append(self.matrices[i][0])
 
     def addMatrix(self, matrix, name=''):
-        self.matrices.append((matrix, name))
-        self.writeOnFile(self.matrices)
+        if name != '':
+            self.matrices.append((matrix, name))
+            self.writeOnFile(self.matrices)
+        else:
+            self.textArea.printInOutputArea('Error: Your matrix must have a name')
 
     def getMatrices(self):
         return self.matrices

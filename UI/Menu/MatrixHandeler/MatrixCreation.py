@@ -158,7 +158,6 @@ class MatrixCreationWindow:
         e = Entry(frame, width=30, borderwidth=5)
         e.grid(row=1, column=0)
 
-        button = Button(frame, text='Get Data', command=lambda: self.matrixMemory.addMatrix(myArray, e.get()))
+        button = Button(frame, text='Get Data', command=lambda: self.matrixMemory.addMatrix(myMatrix, e.get()))
         button.grid(row=2, column=0)
-
         frame.grid(row=0, column=1)
