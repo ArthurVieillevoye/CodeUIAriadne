@@ -21,6 +21,9 @@ class MatrixCreationWindow:
         self.histcol = 0
         self.matrixMemory = matrixMemory
         self.textArea = textArea
+        self.entryRow = 0
+        self.entryColumns = 0
+        self.root.focus_set()
 
     def addMatrixWindow(self):
         """
@@ -57,7 +60,6 @@ class MatrixCreationWindow:
         buttonCreateMatrix = Button(self.root, text="Enter Size", padx=5, pady=5, command=self.updateMatrixWindow)
         buttonCreateMatrix.grid(row=0, column=3, sticky="ew")
 
-
     def updateMatrixWindow(self):
         # Enter the column numbers.
         if self.histrow != int(self.e1.get()) or self.histcol != int(self.e2.get()):
@@ -84,7 +86,11 @@ class MatrixCreationWindow:
             l.grid(row=r, column=4)
             # Add the entries for the values.
             for c in range(self.col):
-                singleEntry = Entry(self.root, width=5)  # 5 chars
+                singleEntry = Entry(self.root, width=5, validatecommand=self.updateIndexes)  # 5 chars
+                singleEntry.bind("<Left>", lambda e:self.left(e))
+                singleEntry.bind("<Right>", lambda e:self.right(e))
+                singleEntry.bind("<Up>", lambda e:self.up(e))
+                singleEntry.bind("<Down>", lambda e:self.down(e))
                 try:
                     singleEntry.insert('end', self.matrix[r, c])
                 except:
@@ -92,6 +98,7 @@ class MatrixCreationWindow:
                 singleEntry.grid(row=r, column=c + 5)
                 entries_row.append(singleEntry)
             self.entries.append(entries_row)
+        self.entries[self.entryRow][self.entryColumns].focus_set()
 
         saveButton = Button(self.root, text='Save matrix', padx=5, pady=5, command=self.get_data)
         saveButton.grid(row=2, column=3, sticky="ew")
@@ -100,6 +107,38 @@ class MatrixCreationWindow:
         addRowButton.grid(row=self.row, column=5)
         addColButton = Button(self.root, text='+', command=self.addCol)
         addColButton.grid(row=0, column=self.col + 6)
+
+    def updateIndexes(self):
+        print('hello')
+
+    def left(self, event):
+        try:
+            self.entryColumns = self.entryColumns - 1
+            self.entries[self.entryRow][self.entryColumns].focus()
+        except:
+            pass
+
+    def right(self, event):
+        try:
+            self.entryColumns = self.entryColumns + 1
+            print(type(self.entries[self.entryRow][self.entryColumns]))
+            self.entries[self.entryRow][self.entryColumns].focus()
+        except:
+            pass
+
+    def up(self, event):
+        try:
+            self.entryRow = self.entryRow - 1
+            self.entries[self.entryRow][self.entryColumns].focus()
+        except:
+            pass
+
+    def down(self, event):
+        try:
+            self.entryRow = self.entryRow + 1
+            self.entries[self.entryRow][self.entryColumns].focus()
+        except:
+            pass
 
     def addRow(self):
         self.matrix = self.get_data(True)
@@ -173,7 +212,6 @@ class MatrixCreationWindow:
         if not passed:
             self.textArea.printInOutputArea('You did not enter the matrix in a correct form')
 
-
     def getMatrixFromFile(self):
         """
         This method is used if the user wants to open a .xcel file containing a matrix.
@@ -183,19 +221,28 @@ class MatrixCreationWindow:
             if int(label.grid_info()["column"]) > 0:
                 label.destroy()
 
-        # TODO: Add read from CSV files
         open_file_loc = filedialog.askopenfilename()
         if open_file_loc != '':
-            df = pd.read_excel(open_file_loc, header=None)
-            df.values
-            # print(df)
-            myArray = df.to_numpy()
-            # print(myArray)
+            try:
+                df = pd.read_excel(open_file_loc, header=None)
+                myMatrix = df.to_numpy()
+                self.nameWindowForUploadedMatrices(myMatrix)
+            except:
+                try:
+                    print('hello')
+                    df = pd.read_csv(open_file_loc, header=None, sep=';')
+                    print('df: ', df)
+                    # df.values
+                    myMatrix = df.to_numpy()
+                    self.nameWindowForUploadedMatrices(myMatrix)
+                except:
+                    self.textArea.printInOutputArea("Error: File is not in the correct format (.csv or .xcel)")
 
-            label = Label(self.root, text="Name of the matrix:")
-            label.grid(row=0, column=1, sticky=W)
-            e = Entry(self.root, width=30, borderwidth=5)
-            e.grid(row=1, column=1, sticky=W)
+    def nameWindowForUploadedMatrices(self, myMatrix):
+        label = Label(self.root, text="Name of the matrix:")
+        label.grid(row=0, column=1)
+        e = Entry(self.root, width=30, borderwidth=5)
+        e.grid(row=1, column=1)
 
-            button = Button(self.root, text='Get Data', command=lambda: self.matrixMemory.addMatrix(myArray, e.get()))
-            button.grid(row=2, column=1, sticky=W)
+        button = Button(self.root, text='Get Data', command=lambda: self.matrixMemory.addMatrix(myMatrix, e.get()))
+        button.grid(row=2, column=1)

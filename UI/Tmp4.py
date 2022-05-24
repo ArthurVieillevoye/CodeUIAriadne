@@ -14,4 +14,4 @@ for el in hello1:
     listtmp = '[' + el + ']'
     lst.append(eval(listtmp))
 
-print(np.array(lst))
+print(lst[0][0])
