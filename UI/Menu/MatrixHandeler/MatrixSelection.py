@@ -33,7 +33,16 @@ class Matrices:
 
     def writeOnFile(self, lst):
         with open('MatrixDatabase.txt', 'w') as fp:
+            fp.truncate(0)
+            # for x in lst:
+            #     matrix = repr(x[0])
+            #     fp.write(matrix)
+            #     fp.write(';')
+            #     fp.write(x[1])
+            #     fp.write('\n')
+
             fp.write('\n'.join('{};{}'.format(repr(x[0]), x[1]) for x in lst))
+            fp.close()
 
     # read the file
     def readDatabaseFromFile(self):
@@ -42,7 +51,9 @@ class Matrices:
             with open('MatrixDatabase.txt') as f:
                 for i in f:
                     a, b = i.split(';')
+                    b = b.replace('\n', '')
                     mylist.append((FloatDPApproximationMatrix(eval(a), dp), b))
+                f.close()
             print(type(mylist[0][0]))
         except:
             pass

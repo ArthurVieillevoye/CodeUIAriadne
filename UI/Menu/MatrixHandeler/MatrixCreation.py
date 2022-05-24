@@ -126,6 +126,53 @@ class MatrixCreationWindow:
             print(demand)
             self.matrixMemory.addMatrix(demand, self.e3.get())
 
+    def addMatrixTextWindow(self):
+        for label in self.root.grid_slaves():
+            if int(label.grid_info()["column"]) > 0:
+                label.destroy()
+
+        label1 = Label(self.root, text='Enter your matrix in python or matlab form')
+        label1.grid(row=0, column=1, columnspan=2)
+
+        label2 = Label(self.root, text='Matrix: ')
+        label2.grid(row=1, column=1)
+        matrixEntry = Entry(self.root, width=100)
+        matrixEntry.grid(row=1, column=2)
+
+        label = Label(self.root, text="Name of the matrix:")
+        label.grid(row=2, column=1)
+        entryName = Entry(self.root, width=50)
+        entryName.grid(row=2, column=2, sticky=W)
+
+        button = Button(self.root, text='save Matrix', padx=5, pady=5,
+                        command=lambda: self.decodeEnteredMatrix(matrixEntry.get(), entryName.get()))
+        button.grid(row=3, column=1)
+
+    def decodeEnteredMatrix(self, matrix, name):
+        passed = True
+        try:
+            self.matrixMemory.addMatrix(FloatDPApproximationMatrix(eval(matrix), dp), name)
+        except:
+            passed = False
+        try:
+            if not passed:
+                passed = True
+                myMatrix = []
+                matrix = matrix.replace("[", "")
+                matrix = matrix.replace("]", "")
+                matrix = matrix.replace(" ", "")
+
+                matrix = matrix.split(';')
+                for el in matrix:
+                    listTmp = '[' + el + ']'
+                    myMatrix.append(eval(listTmp))
+                print(myMatrix)
+                self.matrixMemory.addMatrix(FloatDPApproximationMatrix(myMatrix, dp), name)
+        except:
+            passed = False
+
+        if not passed:
+            self.textArea.printInOutputArea('You did not enter the matrix in a correct form')
 
     def getMatrixFromFile(self):
         """
@@ -141,23 +188,17 @@ class MatrixCreationWindow:
                 self.nameWindowForUploadedMatrices(myMatrix)
             except:
                 try:
-                    print('hello')
                     df = pd.read_csv(open_file_loc, header=None, sep=';')
-                    print('df: ', df)
                     myMatrix = FloatDPApproximationMatrix(df.values.tolist(), dp)
                     self.nameWindowForUploadedMatrices(myMatrix)
                 except:
                     self.textArea.printInOutputArea("Error: File is not in the correct format (.csv or .xcel)")
 
     def nameWindowForUploadedMatrices(self, myMatrix):
+        label = Label(self.root, text="Name of the matrix:")
+        label.grid(row=0, column=1)
+        e = Entry(self.root, width=30, borderwidth=5)
+        e.grid(row=1, column=1)
 
-        frame = Frame(self.root)
-
-        label = Label(frame, text="Name of the matrix:")
-        label.grid(row=0, column=0)
-        e = Entry(frame, width=30, borderwidth=5)
-        e.grid(row=1, column=0)
-
-        button = Button(frame, text='Get Data', command=lambda: self.matrixMemory.addMatrix(myMatrix, e.get()))
-        button.grid(row=2, column=0)
-        frame.grid(row=0, column=1)
+        button = Button(self.root, text='Get Data', command=lambda: self.matrixMemory.addMatrix(myMatrix, e.get()))
+        button.grid(row=2, column=1)
