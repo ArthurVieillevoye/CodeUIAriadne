@@ -34,12 +34,6 @@ class Matrices:
     def writeOnFile(self, lst):
         with open('MatrixDatabase.txt', 'w') as fp:
             fp.truncate(0)
-            # for x in lst:
-            #     matrix = repr(x[0])
-            #     fp.write(matrix)
-            #     fp.write(';')
-            #     fp.write(x[1])
-            #     fp.write('\n')
 
             fp.write('\n'.join('{};{}'.format(repr(x[0]), x[1]) for x in lst))
             fp.close()
@@ -63,8 +57,8 @@ class Matrices:
         window = Frame(self.frame)
 
         matrix = self.matrices[i][0]
-        m, n = 0, 1
-        # m,n = np.shape(matrix)
+        m = matrix.row_size()
+        n = matrix.column_size()
         if self.histrow != int(m) or self.histcol != int(n):
             self.histrow = int(m)
             self.histcol = int(n)
