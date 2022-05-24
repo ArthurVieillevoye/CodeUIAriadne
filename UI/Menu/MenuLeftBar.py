@@ -35,7 +35,7 @@ class MenuWithButton:
         Call the matrixCreation object.
         Allow the user choose an excel file containing a matrix.
         """
-        m = MatrixCreation.MatrixCreationWindow(self.newMatrixFrame, matrixMemory=self.matrixMemory)
+        m = MatrixCreation.MatrixCreationWindow(self.newMatrixFrame, textArea=self.textArea, matrixMemory=self.matrixMemory)
         m.getMatrixFromFile()
 
     # def addMatrixWindow(self):
@@ -46,12 +46,19 @@ class MenuWithButton:
     #     m = MatrixCreation.MatrixCreationWindow(self.root, int(self.e1.get()), int(self.e2.get()), matrixMemory=self.matrixMemory)
     #     m.addMatrixWindow()
 
-    def bMatrixWrite(self):
+    def bMatrixEnter(self):
         """
         This methods creates the window on which the user can enter the size of the matrix he wants to enter.
         """
-        m = MatrixCreation.MatrixCreationWindow(self.newMatrixFrame, matrixMemory=self.matrixMemory)
+        m = MatrixCreation.MatrixCreationWindow(self.newMatrixFrame, textArea=self.textArea, matrixMemory=self.matrixMemory)
         m.addMatrixWindow()
+
+    def bMatrixWrite(self):
+        # self.buttonEnter.grid_remove()
+        # self.buttonWrite.grid_remove()
+        # self.buttonMatrixFromFile.grid_remove()
+        m = MatrixCreation.MatrixCreationWindow(self.newMatrixFrame, textArea=self.textArea, matrixMemory=self.matrixMemory)
+        m.addMatrixTextWindow()
 
 
     def newMatrixButtonAction(self):
@@ -62,13 +69,17 @@ class MenuWithButton:
 
         self.newMatrixFrame = Frame(self.root)
         # self.newWindow.geometry("200x200")
+        self.buttonEnter = Button(self.newMatrixFrame, text="Enter Matrix", padx=5, pady=5,
+                                  command=self.bMatrixEnter)
+        self.buttonEnter.grid(row=0, column=0, sticky="new")
+
         self.buttonWrite = Button(self.newMatrixFrame, text="Write Matrix", padx=5, pady=5,
                                   command=self.bMatrixWrite)
-        self.buttonWrite.grid(row=0, column=0, sticky="new")
+        self.buttonWrite.grid(row=1, column=0, sticky="new")
 
         self.buttonMatrixFromFile = Button(self.newMatrixFrame, text="Upload Matrix", padx=5, pady=5,
                                   command=self.bMatrixFromFile)
-        self.buttonMatrixFromFile.grid(row=1, column=0, sticky="new")
+        self.buttonMatrixFromFile.grid(row=2, column=0, sticky="new")
 
         self.newMatrixFrame.grid(row=0, column=1, sticky=N + S + E + W)
 

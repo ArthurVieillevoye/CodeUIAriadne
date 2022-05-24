@@ -11,7 +11,7 @@ class MatrixCreationWindow:
     the matrix from a file.
     """
 
-    def __init__(self, root, row=0, col=0, matrixMemory=None):
+    def __init__(self, root, textArea, row=0, col=0, matrixMemory=None):
         self.entries = []
         self.row = row
         self.col = col
@@ -20,11 +20,16 @@ class MatrixCreationWindow:
         self.histrow = 0
         self.histcol = 0
         self.matrixMemory = matrixMemory
+        self.textArea = textArea
 
     def addMatrixWindow(self):
         """
         Create a new window for the user to enter the matrix of its choice.
         """
+
+        for label in self.root.grid_slaves():
+            if int(label.grid_info()["column"]) > 0:
+                label.destroy()
 
         # self.buttonWrite.grid_remove()
         # self.buttonMatrixFromFile.grid_remove()
@@ -51,6 +56,7 @@ class MatrixCreationWindow:
 
         buttonCreateMatrix = Button(self.root, text="Enter Size", padx=5, pady=5, command=self.updateMatrixWindow)
         buttonCreateMatrix.grid(row=0, column=3, sticky="ew")
+
 
     def updateMatrixWindow(self):
         # Enter the column numbers.
@@ -121,12 +127,63 @@ class MatrixCreationWindow:
         else:
             self.matrixMemory.addMatrix(demand, self.e3.get())
 
+    def addMatrixTextWindow(self):
+        for label in self.root.grid_slaves():
+            if int(label.grid_info()["column"]) > 0:
+                label.destroy()
+
+        label1 = Label(self.root, text='Enter your matrix in python or matlab form')
+        label1.grid(row=0, column=1, columnspan=2)
+
+        label2 = Label(self.root, text='Matrix: ')
+        label2.grid(row=1, column=1)
+        matrixEntry = Entry(self.root, width=100)
+        matrixEntry.grid(row=1, column=2)
+
+        label = Label(self.root, text="Name of the matrix:")
+        label.grid(row=2, column=1)
+        entryName = Entry(self.root, width=50)
+        entryName.grid(row=2, column=2, sticky=W)
+
+        button = Button(self.root, text='save Matrix', padx=5, pady=5,
+                        command=lambda: self.decodeEnteredMatrix(matrixEntry.get(), entryName.get()))
+        button.grid(row=3, column=1)
+
+    def decodeEnteredMatrix(self, matrix, name):
+        passed = True
+        try:
+            self.matrixMemory.addMatrix(np.array(eval(matrix)), name)
+        except:
+            passed = False
+        try:
+            passed = True
+            myMatrix = []
+            matrix = matrix.replace("[", "")
+            matrix = matrix.replace("]", "")
+            matrix = matrix.replace(" ", "")
+
+            matrix = matrix.split(';')
+            for el in matrix:
+                listTmp = '[' + el + ']'
+                myMatrix.append(eval(listTmp))
+            self.matrixMemory.addMatrix(np.array(myMatrix), name)
+        except:
+            passed = False
+
+        if not passed:
+            self.textArea.printInOutputArea('You did not enter the matrix in a correct form')
+
 
     def getMatrixFromFile(self):
         """
         This method is used if the user wants to open a .xcel file containing a matrix.
         Read this file and return the matrix contained into the .xcel file.s
         """
+        for label in self.root.grid_slaves():
+            if int(label.grid_info()["column"]) > 0:
+                label.destroy()
+
+        # TODO: Add read from CSV files
         open_file_loc = filedialog.askopenfilename()
         if open_file_loc != '':
             df = pd.read_excel(open_file_loc, header=None)
@@ -135,14 +192,10 @@ class MatrixCreationWindow:
             myArray = df.to_numpy()
             # print(myArray)
 
-            frame = Frame(self.root)
+            label = Label(self.root, text="Name of the matrix:")
+            label.grid(row=0, column=1, sticky=W)
+            e = Entry(self.root, width=30, borderwidth=5)
+            e.grid(row=1, column=1, sticky=W)
 
-            label = Label(frame, text="Name of the matrix:")
-            label.grid(row=0, column=0)
-            e = Entry(frame, width=30, borderwidth=5)
-            e.grid(row=1, column=0)
-
-            button = Button(frame, text='Get Data', command=lambda: self.matrixMemory.addMatrix(myArray, e.get()))
-            button.grid(row=2, column=0)
-
-            frame.grid(row=0, column=1)
+            button = Button(self.root, text='Get Data', command=lambda: self.matrixMemory.addMatrix(myArray, e.get()))
+            button.grid(row=2, column=1, sticky=W)
