@@ -57,16 +57,22 @@ class MatrixCreationWindow:
         # self.e1.bind_all('<Return>', lambda event: self.updateMatrixWindow)
         # self.e2.bind_all('<Return>', lambda event: self.updateMatrixWindow)
 
-        buttonCreateMatrix = Button(self.root, text="Enter Size", padx=5, pady=5, command=self.updateMatrixWindow)
+        buttonCreateMatrix = Button(self.root, text="Enter Size", padx=5, pady=5, command=self.getRowAndColumnSize)
         buttonCreateMatrix.grid(row=0, column=3, sticky="ew")
 
-    def updateMatrixWindow(self):
+    def getRowAndColumnSize(self):
         # Enter the column numbers.
-        if self.histrow != int(self.e1.get()) or self.histcol != int(self.e2.get()):
-            self.histrow = int(self.e1.get())
-            self.histcol = int(self.e2.get())
-            self.row = int(self.e1.get())
-            self.col = int(self.e2.get())
+        try:
+            if self.histrow != int(self.e1.get()) or self.histcol != int(self.e2.get()):
+                self.histrow = int(self.e1.get())
+                self.histcol = int(self.e2.get())
+                self.row = int(self.e1.get())
+                self.col = int(self.e2.get())
+                self.updatMatrixWindow()
+        except:
+            self.textArea.printInOutputArea('You did not correctly entered the size of the matrix. Only integer allowed.')
+
+    def updatMatrixWindow(self):
 
         # Delete all the elements previously present on the grid.
         for label in self.root.grid_slaves():
