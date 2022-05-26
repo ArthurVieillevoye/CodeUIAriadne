@@ -79,6 +79,7 @@ class MainTextArea:
         frame.grid(row=1, column=1, sticky=N+S+E+W)
 
     def printInOutputArea(self, textToPrint):
+        self.textOutput.delete(0, END)
         textToPrint = textToPrint + '\n'
         self.textOutput.config(state="normal")
         self.textOutput.insert(END, textToPrint)
