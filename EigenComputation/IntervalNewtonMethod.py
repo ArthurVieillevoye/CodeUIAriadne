@@ -45,17 +45,17 @@ def intervalNewtonMethod(A, vect, lamb):
 
 
 if __name__ == '__main__':
-    A = FloatDPBoundsMatrix([[1,2],[3,4]], dp)
+    A = FloatDPBoundsMatrix([[2,-1,1],[-1,3,2],[1,2,3]], dp)
     eps = 0.5
-    v = FloatDPBoundsVector([{x_(2-eps):x_(2+eps)},{x_(3):x_(3+eps)}], dp)
-    lamb = FloatDPBounds(9, dp)
+    v = FloatDPBoundsVector([{x_(1-eps):x_(1+eps)},{x_(-1):x_(-1+eps)},{x_(-1):x_(0+eps)}], dp)
+    lamb = FloatDPBounds({1:2}, dp)
 
     assert (type(lamb) == FloatDPBounds or type(lamb) == FloatMPBounds)
     # e = 1
-    e = FloatDPBoundsVector([1, 1], dp)
-
-    v1 = v - e
-    v2 = (v + e)
+    # e = FloatDPBoundsVector([1, 1], dp)
+    #
+    # v1 = v - e
+    # v2 = (v + e)
 
     # v = join(v1, v2)
     # print(len(v))
@@ -67,6 +67,11 @@ if __name__ == '__main__':
     print(len(f))
 
     tmp = solve(df, f)
+    print(type(tmp))
+    print(tmp)
+
+    print((cast_exact(v)))
+    print(lamb)
 
     v = cast_exact(v) - tmp
     #
@@ -75,6 +80,6 @@ if __name__ == '__main__':
     # if refines(v1, v2):
     #     print('we got a problem')
 
-    print(cast_exact(e))
+    # print(cast_exact(e))
 # else:
 #	print('All right')

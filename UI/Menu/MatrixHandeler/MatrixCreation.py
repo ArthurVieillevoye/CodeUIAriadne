@@ -20,6 +20,8 @@ class MatrixCreationWindow:
         self.matrix = []
         self.histrow = 0
         self.histcol = 0
+        self.entryRow = 0
+        self.entryColumns = 0
         self.textArea = textArea
         self.matrixMemory = matrixMemory
 
@@ -51,17 +53,24 @@ class MatrixCreationWindow:
         # self.e1.bind_all('<Return>', lambda event: self.updateMatrixWindow)
         # self.e2.bind_all('<Return>', lambda event: self.updateMatrixWindow)
 
-        buttonCreateMatrix = Button(self.root, text="Enter Size", padx=5, pady=5, command=self.updateMatrixWindow)
+        buttonCreateMatrix = Button(self.root, text="Enter Size", padx=5, pady=5, command=self.getRowAndColumnSize)
         buttonCreateMatrix.grid(row=0, column=3, sticky="ew")
 
-    def updateMatrixWindow(self):
+    def getRowAndColumnSize(self):
         # Enter the column numbers.
+        #try
         if self.histrow != int(self.e1.get()) or self.histcol != int(self.e2.get()):
             self.histrow = int(self.e1.get())
             self.histcol = int(self.e2.get())
             self.row = int(self.e1.get())
             self.col = int(self.e2.get())
+        self.updateMatrixWindow()
+        # except:
+        #     self.textArea.printInOutputArea('Error: The entered size is not an integer.')
 
+    def updateMatrixWindow(self):
+
+        print(self.row, self.col)
         # Delete all the elements previously present on the grid.
         for label in self.root.grid_slaves():
             if int(label.grid_info()["column"]) > 3:
@@ -81,6 +90,11 @@ class MatrixCreationWindow:
             # Add the entries for the values.
             for c in range(self.col):
                 singleEntry = Entry(self.root, width=5)  # 5 chars
+                # singleEntry.bind("<Button-1>", lambda e: self.updateIndexes(e, singleEntry))
+                singleEntry.bind("<Control-Left>", lambda e: self.left(e))
+                singleEntry.bind("<Control-Right>", lambda e: self.right(e))
+                singleEntry.bind("<Control-Up>", lambda e: self.up(e))
+                singleEntry.bind("<Control-Down>", lambda e: self.down(e))
                 try:
                     singleEntry.insert('end', self.matrix[r, c])
                 except:
@@ -97,12 +111,40 @@ class MatrixCreationWindow:
         addColButton = Button(self.root, text='+', command=self.addCol)
         addColButton.grid(row=0, column=self.col + 6)
 
+    def left(self, event):
+        if self.entryColumns - 1 >= 0:
+            self.entryColumns = self.entryColumns - 1
+            self.entries[self.entryRow][self.entryColumns].focus()
+            print(self.entryRow, self.entryColumns)
+
+    def right(self, event):
+        if self.entryColumns + 1 <= self.col:
+            self.entryColumns = self.entryColumns + 1
+            print(self.entryRow, self.entryColumns)
+            self.entries[self.entryRow][self.entryColumns].focus()
+
+    def up(self, event):
+        if self.entryRow - 1 >= 0:
+            self.entryRow = self.entryRow - 1
+            print(self.entryRow, self.entryColumns)
+            self.entries[self.entryRow][self.entryColumns].focus()
+
+    def down(self, event):
+        if self.entryRow + 1 <= self.row:
+            self.entryRow = self.entryRow + 1
+            print(self.entryRow, self.entryColumns)
+            self.entries[self.entryRow][self.entryColumns].focus()
+
     def addRow(self):
+        self.entryRow = 0
+        self.entryColumns = 0
         self.matrix = self.get_data(True)
         self.row = self.row + 1
         self.updateMatrixWindow()
 
     def addCol(self):
+        self.entryRow = 0
+        self.entryColumns = 0
         self.matrix = self.get_data(True)
         self.col = self.col + 1
         self.updateMatrixWindow()
