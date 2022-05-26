@@ -1,17 +1,16 @@
-import numpy as np
+from tkinter import *
 
-hello = '[[1,2,3 ; 4,5,6]]'
+root = Tk()
 
-lst = []
-hello = hello.replace("[", "")
-hello = hello.replace("]", "")
-hello = hello.replace(" ", "")
-print(hello)
+def key(event):
+    print("pressed", repr(event.char))
 
-hello1 = hello.split(';')
-print(hello1)
-for el in hello1:
-    listtmp = '[' + el + ']'
-    lst.append(eval(listtmp))
+def callback(event):
+    print( "clicked at", event.x, event.y)
 
-print(lst[0][0])
+canvas= Canvas(root, width=100, height=100)
+canvas.bind("<Key>", key)
+# canvas.bind("<Button-1>", callback)
+canvas.pack()
+
+root.mainloop()

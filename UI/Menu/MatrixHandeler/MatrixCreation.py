@@ -62,17 +62,17 @@ class MatrixCreationWindow:
 
     def getRowAndColumnSize(self):
         # Enter the column numbers.
-        try:
-            if self.histrow != int(self.e1.get()) or self.histcol != int(self.e2.get()):
-                self.histrow = int(self.e1.get())
-                self.histcol = int(self.e2.get())
-                self.row = int(self.e1.get())
-                self.col = int(self.e2.get())
-                self.updatMatrixWindow()
-        except:
-            self.textArea.printInOutputArea('Error: The entered size is not an integer.')
+        # try:
+        if self.histrow != int(self.e1.get()) or self.histcol != int(self.e2.get()):
+            self.histrow = int(self.e1.get())
+            self.histcol = int(self.e2.get())
+            self.row = int(self.e1.get())
+            self.col = int(self.e2.get())
+        self.updateMatrixWindow()
+        # except:
+        #     self.textArea.printInOutputArea('Error: The entered size is not an integer.')
 
-    def updatMatrixWindow(self):
+    def updateMatrixWindow(self):
 
         # Delete all the elements previously present on the grid.
         for label in self.root.grid_slaves():
@@ -89,19 +89,20 @@ class MatrixCreationWindow:
         for r in range(self.row):
             entries_row = []
             l = Label(self.root, text=str(r))
-            l.grid(row=r, column=4)
+            l.grid(row=r+1, column=4)
             # Add the entries for the values.
             for c in range(self.col):
-                singleEntry = Entry(self.root, width=5, validatecommand=self.updateIndexes)  # 5 chars
-                singleEntry.bind("<Left>", lambda e:self.left(e))
-                singleEntry.bind("<Right>", lambda e:self.right(e))
-                singleEntry.bind("<Up>", lambda e:self.up(e))
-                singleEntry.bind("<Down>", lambda e:self.down(e))
+                singleEntry = Entry(self.root, width=5)#, validatecommand=lambda: self.updateIndexes(r,c))  # 5 chars
+                singleEntry.bind("<Button-1>", lambda e: self.updateIndexes(e, singleEntry))
+                singleEntry.bind("<Control-Left>", lambda e:self.left(e))
+                singleEntry.bind("<Control-Right>", lambda e:self.right(e))
+                singleEntry.bind("<Control-Up>", lambda e:self.up(e))
+                singleEntry.bind("<Control-Down>", lambda e:self.down(e))
                 try:
                     singleEntry.insert('end', self.matrix[r, c])
                 except:
                     singleEntry.insert('end', 0)
-                singleEntry.grid(row=r, column=c + 5)
+                singleEntry.grid(row=r+1, column=c + 5)
                 entries_row.append(singleEntry)
             self.entries.append(entries_row)
         self.entries[self.entryRow][self.entryColumns].focus_set()
@@ -110,41 +111,45 @@ class MatrixCreationWindow:
         saveButton.grid(row=2, column=3, sticky="ew")
 
         addRowButton = Button(self.root, text='+', command=self.addRow)
-        addRowButton.grid(row=self.row, column=5)
+        addRowButton.grid(row=self.row+1, column=5)
         addColButton = Button(self.root, text='+', command=self.addCol)
-        addColButton.grid(row=0, column=self.col + 6)
+        addColButton.grid(row=1, column=self.col + 6)
 
-    def updateIndexes(self):
-        print('hello')
+    def updateIndexes(self,event, entry):
+        print("         ", self.entryRow, self.entryColumns)
+        self.entryRow, self.entryColumns = self.index_2d(entry)
+        print("         ", self.entryRow, self.entryColumns)
+        # self.entryColumns = c
+        entry.focus()
+
+    def index_2d(self, v):
+        for i, x in enumerate(self.entries):
+            if v in x:
+                return i, x.index(v)
 
     def left(self, event):
-        try:
+        if self.entryColumns -1 >= 0:
             self.entryColumns = self.entryColumns - 1
             self.entries[self.entryRow][self.entryColumns].focus()
-        except:
-            pass
+            print(self.entryRow, self.entryColumns)
 
     def right(self, event):
-        try:
+        if self.entryColumns +1 <= self.col:
             self.entryColumns = self.entryColumns + 1
-            print(type(self.entries[self.entryRow][self.entryColumns]))
+            print(self.entryRow, self.entryColumns)
             self.entries[self.entryRow][self.entryColumns].focus()
-        except:
-            pass
 
     def up(self, event):
-        try:
+        if self.entryRow - 1 >= 0:
             self.entryRow = self.entryRow - 1
+            print(self.entryRow, self.entryColumns)
             self.entries[self.entryRow][self.entryColumns].focus()
-        except:
-            pass
 
     def down(self, event):
-        try:
+        if self.entryRow + 1 <= self.row:
             self.entryRow = self.entryRow + 1
+            print(self.entryRow, self.entryColumns)
             self.entries[self.entryRow][self.entryColumns].focus()
-        except:
-            pass
 
     def addRow(self):
         self.matrix = self.get_data(True)
