@@ -70,7 +70,7 @@ class MatrixCreationWindow:
                 self.col = int(self.e2.get())
                 self.updatMatrixWindow()
         except:
-            self.textArea.printInOutputArea('You did not correctly entered the size of the matrix. Only integer allowed.')
+            self.textArea.printInOutputArea('Error: The entered size is not an integer.')
 
     def updatMatrixWindow(self):
 
