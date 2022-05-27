@@ -152,11 +152,15 @@ class MatrixCreationWindow:
             self.entries[self.entryRow][self.entryColumns].focus()
 
     def addRow(self):
+        self.entryRow = 0
+        self.entryColumns = 0
         self.matrix = self.get_data(True)
         self.row = self.row + 1
         self.updateMatrixWindow()
 
     def addCol(self):
+        self.entryRow = 0
+        self.entryColumns = 0
         self.matrix = self.get_data(True)
         self.col = self.col + 1
         self.updateMatrixWindow()
