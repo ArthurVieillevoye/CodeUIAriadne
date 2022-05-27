@@ -111,7 +111,7 @@ class Matrices:
         if ret:
             return demand
         else:
-            self.addMatrix(demand, self.matrices[i][1])
+            self.addMatrix(demand, selectedMatrix[1])
 
     def deleteMatrix(self, i):
         self.matrices.pop(i)
