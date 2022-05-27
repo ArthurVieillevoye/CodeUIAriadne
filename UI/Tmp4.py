@@ -1,33 +1,45 @@
-from tkinter import *
-import numpy as np
-import pandas as pd
-from tkinter import filedialog
 from pyariadne import *
 
 
-def getMatrixFromFile():
-    """
-    This method is used if the user wants to open a .xcel file containing a matrix.
-    Read this file and return the matrix contained into the .xcel file.s
-    """
-    open_file_loc = filedialog.askopenfilename()
-    if open_file_loc != '':
-        df = pd.read_csv(open_file_loc, header=None, sep=';')
-        print('df: ', df)
-        myArray = FloatDPApproximationMatrix(df.values.tolist(), dp)
-        print(myArray)
+def power_methods(A):
+    x1 = [1]
+    for i in range(A.column_size()-1):
+        x1.append(1)
+    x1 = FloatDPApproximationVector(x1, dp)
+    # x1 = np.array([np.ones(len(A))]).T
+    # print("hello",x1)
+
+    for i in range(50):
+        x1 = A * x1
+        x1 = normalize(x1)
+    tmp = A * x1
+    l = maxAbsoluteVector(tmp)
+
+    return l, x1
+
+def normalize(x):
+    d = maxVector(x)
+    x_n = x / d
+    return x_n
+
+def maxAbsoluteVector(v):
+    maxi = abs(v[0])
+    for i in range(1, len(v)):
+        maxi = max(abs(v[i]), maxi)
+    return maxi
+
+def maxVector(v):
+    maxi = v[0]
+    for i in range(1, len(v)):
+        maxi = max(v[i], maxi)
+    return maxi
 
 
-        # frame = Frame(self.root)
-        #
-        # label = Label(frame, text="Name of the matrix:")
-        # label.grid(row=0, column=0)
-        # e = Entry(frame, width=30, borderwidth=5)
-        # e.grid(row=1, column=0)
-        #
-        # button = Button(frame, text='Get Data', command=lambda: self.matrixMemory.addMatrix(myArray, e.get()))
-        # button.grid(row=2, column=0)
-        #
-        # frame.grid(row=0, column=1)
+A = FloatDPApproximationMatrix([[1, 2, 0],[0, 0, 1],[1, 0, 0]], dp)
 
-getMatrixFromFile()
+
+eigenvalues1, eigenvectors1 = power_methods(A)
+print('mine:',eigenvalues1, eigenvectors1)
+
+# v = FloatDPApproximationVector([3,1,1], dp)
+mine: 1.696 [1.000,0.3478,0.5898]

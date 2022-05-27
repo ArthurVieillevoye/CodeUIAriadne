@@ -165,8 +165,10 @@ class MatrixCreationWindow:
             print(demand)
             return demand
         else:
-            print(demand)
-            self.matrixMemory.addMatrix(demand, self.e3.get())
+            if self.e3.get() == '':
+                self.textArea.printInOutputArea('Error: name missing')
+            else:
+                self.matrixMemory.addMatrix(demand, self.e3.get())
 
     def addMatrixTextWindow(self):
         for label in self.root.grid_slaves():
@@ -191,30 +193,33 @@ class MatrixCreationWindow:
         button.grid(row=3, column=1)
 
     def decodeEnteredMatrix(self, matrix, name):
-        passed = True
-        try:
-            self.matrixMemory.addMatrix(FloatDPApproximationMatrix(eval(matrix), dp), name)
-        except:
-            passed = False
-        try:
+        if name == '':
+            self.textArea.printInOutputArea('Error: name missing')
+        else:
+            passed = True
+            try:
+                self.matrixMemory.addMatrix(FloatDPApproximationMatrix(eval(matrix), dp), name)
+            except:
+                passed = False
+            try:
+                if not passed:
+                    passed = True
+                    myMatrix = []
+                    matrix = matrix.replace("[", "")
+                    matrix = matrix.replace("]", "")
+                    matrix = matrix.replace(" ", "")
+
+                    matrix = matrix.split(';')
+                    for el in matrix:
+                        listTmp = '[' + el + ']'
+                        myMatrix.append(eval(listTmp))
+                    print(myMatrix)
+                    self.matrixMemory.addMatrix(FloatDPApproximationMatrix(myMatrix, dp), name)
+            except:
+                passed = False
+
             if not passed:
-                passed = True
-                myMatrix = []
-                matrix = matrix.replace("[", "")
-                matrix = matrix.replace("]", "")
-                matrix = matrix.replace(" ", "")
-
-                matrix = matrix.split(';')
-                for el in matrix:
-                    listTmp = '[' + el + ']'
-                    myMatrix.append(eval(listTmp))
-                print(myMatrix)
-                self.matrixMemory.addMatrix(FloatDPApproximationMatrix(myMatrix, dp), name)
-        except:
-            passed = False
-
-        if not passed:
-            self.textArea.printInOutputArea('You did not enter the matrix in a correct form')
+                self.textArea.printInOutputArea('You did not enter the matrix in a correct form')
 
     def getMatrixFromFile(self):
         """
@@ -242,5 +247,11 @@ class MatrixCreationWindow:
         e = Entry(self.root, width=30, borderwidth=5)
         e.grid(row=1, column=1)
 
-        button = Button(self.root, text='Get Data', command=lambda: self.matrixMemory.addMatrix(myMatrix, e.get()))
+        button = Button(self.root, text='Get Data', command=lambda: self.verifyName(myMatrix, e.get()))
         button.grid(row=2, column=1)
+
+    def verifyName(self, myMatrix, e):
+        if e == '':
+            self.textArea.printInOutputArea('Error: name missing')
+        else:
+            self.matrixMemory.addMatrix(myMatrix, e)

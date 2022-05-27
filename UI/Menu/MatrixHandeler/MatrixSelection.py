@@ -114,10 +114,11 @@ class Matrices:
                 text = entry.get()
                 demand[r, c] = float(text)
 
+        demand = FloatDPApproximationMatrix(demand.tolist(), dp)
         if ret:
             return demand
         else:
-            self.addMatrix(demand, self.matrices[i][1])
+            self.addMatrix(demand, selectedMatrix[1])
 
     def deleteMatrix(self, i):
         self.matrices.pop(i)
@@ -131,7 +132,7 @@ class Matrices:
         var = IntVar()
         window = Frame(self.frame)
         for i in range(len(self.matrices)):
-            text = self.matrices[i][1] + ': ' + str(np.shape(self.matrices[i][0]))
+            text = self.matrices[i][1] + ': (' + str(self.matrices[i][0].column_size()) + ' ' + str(self.matrices[i][0].row_size()) + ')'
             Radiobutton(window, text=text, padx=20, variable=var, value=i).pack(anchor=W)
             # TODO: Add the name of the matrix.
 
