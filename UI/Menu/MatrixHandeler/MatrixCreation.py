@@ -58,15 +58,15 @@ class MatrixCreationWindow:
 
     def getRowAndColumnSize(self):
         # Enter the column numbers.
-        #try
-        if self.histrow != int(self.e1.get()) or self.histcol != int(self.e2.get()):
-            self.histrow = int(self.e1.get())
-            self.histcol = int(self.e2.get())
-            self.row = int(self.e1.get())
-            self.col = int(self.e2.get())
-        self.updateMatrixWindow()
-        # except:
-        #     self.textArea.printInOutputArea('Error: The entered size is not an integer.')
+        try:
+            if self.histrow != int(self.e1.get()) or self.histcol != int(self.e2.get()):
+                self.histrow = int(self.e1.get())
+                self.histcol = int(self.e2.get())
+                self.row = int(self.e1.get())
+                self.col = int(self.e2.get())
+            self.updateMatrixWindow()
+        except:
+            self.textArea.printInOutputArea('Error: The entered size is not an integer.')
 
     def updateMatrixWindow(self):
 

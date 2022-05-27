@@ -15,20 +15,22 @@ class MenuWithButton:
         self.matrixMemory = MatrixSelection.Matrices(self.root, self.textArea)
 
     def addButtonActive(self):
+        self.textArea.deleteAll()
         multButton = MatrixOperation.MatrixMult(self.root, self.textArea, self.matrixMemory)
         self.root.grid_slaves()[0].grid_forget()
         multButton.addMultiplicationWindow()
 
 
     def myMatricesButtonActive(self):
+        self.textArea.deleteAll()
         self.root.grid_slaves()[0].grid_forget()
         self.matrixMemory.seeMatrices()
 
-    def runButtonActive(self):
-        path ="C:/Users/Arthur Vieillevoye/Documents/university/Current Class/Thesis/Code/UI/RunTest.py"
+    # def runButtonActive(self):
+    #     path ="C:/Users/Arthur Vieillevoye/Documents/university/Current Class/Thesis/Code/UI/RunTest.py"
 
         # nPath = path.replace(' ', '\\ ')
-        exec(open(path).read())
+        # exec(open(path).read())
 
     def bMatrixFromFile(self):
         """
@@ -58,6 +60,7 @@ class MenuWithButton:
         Create the window that allows the user to choose how he wants to enter his/her matrix.
         """
         self.root.grid_slaves()[0].grid_forget()
+        self.textArea.deleteAll()
 
         self.newMatrixFrame = Frame(self.root)
         # self.newWindow.geometry("200x200")
