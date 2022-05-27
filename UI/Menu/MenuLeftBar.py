@@ -15,7 +15,7 @@ class MenuWithButton:
         self.matrixMemory = MatrixSelection.Matrices(self.root, self.textArea)
 
     def addButtonActive(self):
-        multButton = MatrixOperation.MatrixMult(self.root, self.matrixMemory, self.textArea, self.matrixMemory)
+        multButton = MatrixOperation.MatrixMult(self.root, self.textArea, self.matrixMemory)
         self.root.grid_slaves()[0].grid_forget()
         multButton.addMultiplicationWindow()
 

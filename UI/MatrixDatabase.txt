@@ -1,1 +1,1 @@
-[[FloatDPApproximation(1.0000000000000000,dp),FloatDPApproximation(0.,dp)],[FloatDPApproximation(0.,dp),FloatDPApproximation(0.,dp)]];M1
+[[FloatDPApproximation(1.0000000000000000,dp),FloatDPApproximation(2.0000000000000000,dp)],[FloatDPApproximation(3.0000000000000000,dp),FloatDPApproximation(4.0000000000000000,dp)]];M2
