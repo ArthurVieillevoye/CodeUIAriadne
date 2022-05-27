@@ -10,11 +10,12 @@ def power_methods(A):
     x1 = np.array([np.ones(len(A))]).T
     # print("hello",x1)
 
-    for i in range(5):
+    for i in range(50):
         x1 = np.dot(A, x1)
         print(x1)
-        l, x1 = normalize(x1)
-        print(l)
+        x1 = normalize(x1)
+    tmp = np.dot(A, x1)
+    l = abs(tmp).max()
 
     return l, x1
 
@@ -31,12 +32,8 @@ def inversePowerMethod(A, estimate = 1):
 
 def normalize(x):
     newX = x.copy()
-    factor = abs(newX).max()
-    print("       ", x.max())
     x_n = x / x.max()
-    print('x_n: ', x_n)
-    print("------------------")
-    return factor, x_n
+    return x_n
 
 
 def normQR(x):
@@ -66,26 +63,26 @@ def normQR(x):
 
 
 # A = np.array([[60, 91, 26], [60, 3, 75], [45, 90, 31]])
-# A = np.array([[1, 2, 0],[0, 0, 1],[1, 0, 0]])
-A = np.array([[2, -1, 1],[ -1, 3, -2],[1, 2, 3]])
+A = np.array([[1, 2, 0],[0, 0, 1],[1, 0, 0]])
+# A = np.array([[2, -1, 1],[ -1, 3, -2],[1, 2, 3]])
 # A = np.array([[2, -12], [1, -5]])
 # A = np.array([[2, -12], [1, -5]])
 # A = np.array([[0, 2], [2, 3]])
 # A = np.array([[2, 1], [1,2]])
 print(A)
 
-eigenvalues, eigenvectors = eig(A)
-# eigenvalues1, eigenvectors1 = power_methods(A)
-eigenvalues2, eigenvectors2 = inversePowerMethod(A, 1.5)
+# eigenvalues, eigenvectors = eig(A)
+eigenvalues1, eigenvectors1 = power_methods(A)
+# eigenvalues2, eigenvectors2 = inversePowerMethod(A, 1.5)
 # print(eigenvalues, eigenvectors[1])
-# print('mine:',eigenvalues1, eigenvectors1)
-print('mine', eigenvalues2, eigenvectors2)
+print('mine:',eigenvalues1, eigenvectors1)
+# print('mine', eigenvalues2, eigenvectors2)
 
 # print(A.dot(eigenvectors[:,1]))
-# print('aaa',A.dot(eigenvectors1))
-# print('aaa',eigenvalues1*eigenvectors1)
-print('bbb',np.dot(A,eigenvectors2))
-print('bbb',eigenvalues2*eigenvectors2)
+print('aaa',A.dot(eigenvectors1))
+print('aaa',eigenvalues1*eigenvectors1)
+# print('bbb',np.dot(A,eigenvectors2))
+# print('bbb',eigenvalues2*eigenvectors2)
 
 # eigenVal, eigenVect = findEigen(A)
 # print(eigenVal)
