@@ -1,1 +1,2 @@
-[[FloatDPApproximation(1.0000000000000000,dp),FloatDPApproximation(2.0000000000000000,dp)],[FloatDPApproximation(3.0000000000000000,dp),FloatDPApproximation(4.0000000000000000,dp)]];M2
+FloatDPApproximationMatrix([["0.","0.","0."],["0.","0.","0."],["0.","0.","0."]],dp);Example1
+FloatDPApproximationMatrix([["1.00000000000000000","0.","0.","0."],["0.","1.00000000000000000","0.","0."],["0.","0.","1.00000000000000000","0."],["0.","0.","0.","1.00000000000000000"]],dp);example2

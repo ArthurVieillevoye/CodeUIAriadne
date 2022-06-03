@@ -20,8 +20,8 @@ textArea = TextArea.MainTextArea()
 textArea.addOutputArea(root)
 
 # Add the top menu with all the functionalities.
-menuBar = MenuTopBar.MenuBar(textArea)
-menuBar.addMenuBar(root)
+# menuBar = MenuTopBar.MenuBar(textArea)
+# menuBar.addMenuBar(root)
 
 # Add the left menu with the different buttons
 leftMenu = MenuLeftBar.MenuWithButton(root, textArea)
