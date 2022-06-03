@@ -155,7 +155,7 @@ class MatrixMult:
             if i < len(self.operands):
                 if self.operands[i] == "+" or self.operands[i] == "*" or self.operands[i] in self.matrixNamesList \
                         or self.operands[i] == "." or self.operands[i].isdigit()  or self.operands[i] == "(" \
-                        or self.operands[i] == ")" or self.operands[i] == "trans":
+                        or self.operands[i] == ")" or self.operands[i] == "trans" or self.operands[i] == "inv":
                     print('hello', self.operands[i])
                     generalText = generalText + self.operands[i]
                     i += 1

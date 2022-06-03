@@ -85,6 +85,11 @@ class MainTextArea:
         self.textOutput.insert(END, textToPrint)
         self.textOutput.config(state='disabled')
 
+    def deleteAll(self):
+        self.textOutput.config(state="normal")
+        self.textOutput.delete("1.0", END)
+        self.textOutput.config(state='disabled')
+
     def getTextWidget(self):
         """
         Getter method.
