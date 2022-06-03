@@ -50,8 +50,8 @@ def place(m, B):
     :return: Te new matrix containing the B matrix.
     '''
     #TODO: Check that m>size(B)
-    I = np.identity(m)      #The identity matrix mXm
-    o, p = B.shape
+    I = FloatDPApproximationMatrix.identity(m, dp)      #The identity matrix mXm
+    o, p = B.row_size(), B.column_size()
     for i in range(m - o, m):
         for j in range(m - o, m):
             # Place the B matrix into the bottom right of the I matrix.
@@ -133,6 +133,31 @@ def euclNormAriadne(A):
         b = b + (A[i] * A[i])
     return sqrt(b)
 
+def copyAriadne(element):
+    return eval(repr(element))
+
+def placeAriadne(m, B):
+    '''
+    Place a smaller matrix B into a larger mXm identity matrix.
+    The matrix B has to be placed into the bottom right of the identity matrix.
+    This method is used in the QComputation methods in order to be able to multiply all the Q matrices.
+    :param m: The size of the larger matrix. (m>size(B))
+    :param B: The matrix we want to place in a larger matrix.
+    :return: Te new matrix containing the B matrix.
+    '''
+    #TODO: Check that m>size(B)
+    I = FloatDPApproximationMatrix.identity(m, dp)      #The identity matrix mXm
+    o, p = B.row_size(), B.column_size()
+    for i in range(m - o, m):
+        for j in range(m - o, m):
+            # Place the B matrix into the bottom right of the I matrix.
+            I[i, j] = B[i - m + o, j - m + o]
+
+    return I
+
+def shrinkMatrixAriadne(matrix):
+    pass
+
 def householderDecompositionAriadne(A):
     '''
     Compute the Q value for a matrix A
@@ -148,11 +173,7 @@ def householderDecompositionAriadne(A):
     a = FloatDPApproximationVector(a, dp)
 
     norm = euclNormAriadne(a)
-    # I = FloatDPApproximationMatrix.identity(len(a), dp)
-    # e = []
-    # for i in range(I.row_size()):
-    #     e.append(I[0, i])
-    # e = FloatDPApproximationVector(e, dp)
+
     e = FloatDPApproximationVector.unit(len(a),0,dp)
     # This u vector will be used to compute the v vector.
     u = a - (norm * e)
@@ -162,7 +183,6 @@ def householderDecompositionAriadne(A):
     v = (1 / euclNormAriadne(u)) * u
 
     # Q calcuation
-    # I = FloatDPApproximationMatrix.identity(v.row_size(), dp)
     tmp1 = []
     for i in range(len(v)):
         tmp2 = []
@@ -170,6 +190,7 @@ def householderDecompositionAriadne(A):
             tmp2.append(v[i] * v[j])
         tmp1.append(tmp2)
 
+    I = FloatDPApproximationMatrix.identity(A.column_size(), dp)
     vMatrix = FloatDPApproximationMatrix(tmp1, dp)
     Q = I - (FloatDPApproximation(2, dp) * vMatrix)
     return Q
@@ -186,12 +207,13 @@ def DecompositionQRAriadne(A):
     n = A.column_size()      # Size of the A matrix
     Q = []              # List of all the Q values of the decomposition of the A matrix
 
+    newA = copyAriadne(A)
     for i in range(n - 1):
         # Compute the Q value for the matrix newA
-        q = householderDecomposition(newA)
+        q = householderDecompositionAriadne(newA)
         newA = q * newA   # Recompute the newA.
 
-        q = place(m, q)
+        q = placeAriadne(n, q)
         Q.append(q)
         # Update the newA. Since q*A gives a column of zero under the diagonal, I deleted the column and the row in
         # order to continue finding.
@@ -224,9 +246,7 @@ print(A)
 print(householderDecomposition(A))
 A = FloatDPApproximationMatrix([[1,2,3],[1,2,3],[1,2,3]], dp)
 print(A)
-print(householderDecompositionAriadne(A))
-
-
+print(DecompositionQRAriadne(A))
 
 
 # print(eigenVal[0])
