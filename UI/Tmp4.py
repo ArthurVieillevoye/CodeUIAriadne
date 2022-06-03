@@ -31,6 +31,8 @@ def householderDecomposition(A):
     # This u vector will be used to compute the v vector.
     u = a - (norm * e)
 
+    # print(normQR(u))
+
     # Calculate the v value (V = u/||u||)
     v = np.array([(1 / normQR(u)) * u])
 
@@ -38,7 +40,6 @@ def householderDecomposition(A):
     I = np.identity(v.shape[1])
     Q = I - (2 * (np.dot(v.T, v)))
     return Q
-
 
 def place(m, B):
     '''
@@ -50,8 +51,8 @@ def place(m, B):
     :return: Te new matrix containing the B matrix.
     '''
     #TODO: Check that m>size(B)
-    I = FloatDPApproximationMatrix.identity(m, dp)      #The identity matrix mXm
-    o, p = B.row_size(), B.column_size()
+    I = np.identity(m)      #The identity matrix mXm
+    o, p = B.shape
     for i in range(m - o, m):
         for j in range(m - o, m):
             # Place the B matrix into the bottom right of the I matrix.
@@ -107,7 +108,7 @@ def findEigen(A):
 
     # Iterate to converge to the correct eigenvalues and eigenvectors.
     for i in range(20):
-        Q, R = decompositionQR(X)
+        Q, R = DecompositionQR(X)
         pQ = np.dot(pQ, Q)
         X = np.dot(R, Q)
         #TODO: instead of 100, check for A-diag(A) approx 0: Put tolerance as input
@@ -133,6 +134,12 @@ def euclNormAriadne(A):
         b = b + (A[i] * A[i])
     return sqrt(b)
 
+def getColumn(column_index, A):
+    col = []
+    for i in range(A.row_size()):
+        col.append(A[i, column_index])
+    return FloatDPApproximationVector(col, dp)
+
 def copyAriadne(element):
     return eval(repr(element))
 
@@ -156,7 +163,13 @@ def placeAriadne(m, B):
     return I
 
 def shrinkMatrixAriadne(matrix):
-    pass
+    m, n = matrix.column_size(), matrix.row_size()
+    answer = FloatDPApproximationMatrix.identity(m-1, dp)
+    for i in range(1, n):
+        for j in range(1, m):
+            answer[i-1,j-1] = matrix[i,j]
+
+    return answer
 
 def householderDecompositionAriadne(A):
     '''
@@ -217,37 +230,70 @@ def DecompositionQRAriadne(A):
         Q.append(q)
         # Update the newA. Since q*A gives a column of zero under the diagonal, I deleted the column and the row in
         # order to continue finding.
-        newA = np.delete(newA, (0), axis=0)
-        newA = np.delete(newA, (0), axis=1)
+        newA = shrinkMatrixAriadne(newA)
 
     # Compute the total Q matrix for the A matrix
-    QTot = np.dot(Q[0], Q[1])
+
+    QTot = Q[0] * Q[1]
     for i in range(2, len(Q)):
-        QTot = np.dot(QTot, Q[i])
+        QTot = QTot, Q[i]
 
     # Compute the R matrix
-    R = np.dot(QTot.T, A)
-    R = np.round(R, 10)
+    R = transpose(QTot) * A
+    # R = np.round(R, 10)
     return QTot, R
+
+def getDiagonalElementAriadne(matrix):
+    diag = []
+    for i in range(matrix.row_size()):
+        diag.append(matrix[i,i])
+    return FloatDPApproximationVector(diag, dp)
+
+def findEigenAriadne(A):
+    '''
+    Find the eigenvalues and the eigenvector for the matrix A.
+    Uses the QR decomposition in order to find them.
+    :param A: The matrix we are interested in.
+    :return: The eigenvectors and eigenvalues of A
+    '''
+    X = copyAriadne(A)
+    pQ = FloatDPApproximationMatrix.identity(A.row_size(), dp)
+
+    # Iterate to converge to the correct eigenvalues and eigenvectors.
+    for i in range(50):
+        Q, R = DecompositionQRAriadne(X)
+        pQ = pQ * Q
+        X = R * Q
+        #TODO: instead of 100, check for A-diag(A) approx 0: Put tolerance as input
+
+
+    eigenVal = getDiagonalElementAriadne(X)
+    # TODO: Keep the closest one to a given estimation.
+    return eigenVal, pQ
 
 
 # A = np.array([[52, 30, 49, 28], [30, 50, 8, 44], [49, 8, 46, 16], [28, 44, 16, 22]])
-# A = np.array([[12,-51,4], [6,167,-68], [-4,24,-41]])
+A = np.array([[12,-51,4], [6,167,-68], [-4,24,-41]])
 # A = np.array([[60, 91, 26], [60, 3, 75], [45, 90, 31]])
 # A = np.array([[12,-51,14,11], [16,167,-68,11], [-14,24,-41,11], [-4,24,-41,11]])
-# A = np.array([[0, 1], [2, 3]])
 
 # eigenVal, eigenVect = findEigen(A)
 # print(eigenVal)
 # print(eigenVect)
 
-A = np.array([[1,2,3],[1,2,3],[1,2,3]])
 print(A)
-print(householderDecomposition(A))
-A = FloatDPApproximationMatrix([[1,2,3],[1,2,3],[1,2,3]], dp)
+print(findEigen(A))
+A = FloatDPApproximationMatrix([[12,-51,4], [6,167,-68], [-4,24,-41]], dp)
 print(A)
-print(DecompositionQRAriadne(A))
+eigenval, eigenvect = findEigenAriadne(A)
+print("$$$$$$$$$$$$$$$$$$$")
+print(eigenval)
+print(eigenvect)
 
+print("$$$$$$$$$$$$$$$$$$$")
+print(getColumn(0, eigenvect))
+print(eigenval[0]*getColumn(0, eigenvect))
+print(A*getColumn(0, eigenvect))
 
 # print(eigenVal[0])
 # print(np.array([eigenVect[:,0]]).T)
