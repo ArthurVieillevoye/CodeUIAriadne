@@ -2,6 +2,7 @@ from tkinter import *
 from UI.Menu.MatrixHandeler import MatrixCreation
 from UI.Menu.MatrixHandeler import MatrixSelection
 from UI.Menu.MatrixHandeler import MatrixOperation
+from UI.Menu.MatrixHandeler import MatrixEigen
 
 
 class MenuWithButton:
@@ -14,12 +15,17 @@ class MenuWithButton:
         self.textArea = textArea
         self.matrixMemory = MatrixSelection.Matrices(self.root, self.textArea)
 
-    def addButtonActive(self):
+    def matrixOperationButtonActive(self):
         self.textArea.deleteAll()
-        multButton = MatrixOperation.MatrixMult(self.root, self.textArea, self.matrixMemory)
+        operationWindow = MatrixOperation.MatrixMult(self.root, self.textArea, self.matrixMemory)
         self.root.grid_slaves()[0].grid_forget()
-        multButton.addMultiplicationWindow()
+        operationWindow.addMultiplicationWindow()
 
+    def matrixEigenButtonActive(self):
+        self.textArea.deleteAll()
+        eigenWindow = MatrixEigen.MatrixEigen(self.root, self.textArea, self.matrixMemory)
+        self.root.grid_slaves()[0].grid_forget()
+        eigenWindow.addEigenWindow()
 
     def myMatricesButtonActive(self):
         self.textArea.deleteAll()
@@ -100,6 +106,9 @@ class MenuWithButton:
         # buttonRun = Button(frame, text="Run", padx=25, pady=5, width=10, command=self.runButtonActive)
         # buttonRun.grid(row=2, column=0, sticky="new", padx=5, pady=5)
 
-        buttonAddMatrix = Button(frame, text="Matrix Operation", padx=5, pady=5, width=10, command=self.addButtonActive)
+        buttonAddMatrix = Button(frame, text="Matrix Operation", padx=5, pady=5, width=10, command=self.matrixOperationButtonActive)
         buttonAddMatrix.grid(row=2, column=0, sticky="new", padx=5, pady=5)
+
+        buttonAddMatrix = Button(frame, text="Matrix Eigen", padx=5, pady=5, width=10, command=self.matrixEigenButtonActive)
+        buttonAddMatrix.grid(row=3, column=0, sticky="new", padx=5, pady=5)
         frame.grid(row=0, column=0, sticky="new", padx=5, pady=5)

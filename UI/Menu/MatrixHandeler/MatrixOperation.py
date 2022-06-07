@@ -43,8 +43,8 @@ class MatrixMult:
         multButton = Button(buttonFrame, text='*', width=10, padx=5, pady=5, command=self.multiplication)
         multButton.grid(row=3, column=3)
 
-        buttonWrite = Button(buttonFrame, text="Eigen", width=10, padx=5, pady=5, command=lambda: self.printEigen(var.get()))
-        buttonWrite.grid(row=4, column=3)
+        # buttonWrite = Button(buttonFrame, text="Eigen", width=10, padx=5, pady=5, command=lambda: self.printEigen(var.get()))
+        # buttonWrite.grid(row=4, column=3)
 
         eqButton = Button(buttonFrame, text='=', width=10, padx=5, pady=5, command=self.equal)
         eqButton.grid(row=4, column=1)
