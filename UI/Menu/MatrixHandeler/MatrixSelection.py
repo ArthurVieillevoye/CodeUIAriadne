@@ -127,12 +127,16 @@ class Matrices:
 
         self.seeMatrices()
 
+    def radioButtonSelected(self, i):
+        self.textArea.addMatrixDisplay(self.frame, str(self.matrices[i][0]))
+
+
     def seeMatrices(self):
         var = IntVar()
         window = Frame(self.frame)
         for i in range(len(self.matrices)):
             text = self.matrices[i][1] + ': (' + str(self.matrices[i][0].column_size()) + ' ' + str(self.matrices[i][0].row_size()) + ')'
-            Radiobutton(window, text=text, padx=20, variable=var, value=i).pack(anchor=W)
+            Radiobutton(window, text=text, padx=20, variable=var, value=i, command= lambda: self.radioButtonSelected(var.get())).pack(anchor=W)
             # TODO: Add the name of the matrix.
 
         buttonSee = Button(window, text="Modify Matrix", width=10, padx=5, pady=5,
@@ -147,7 +151,7 @@ class Matrices:
                             command=lambda: self.deleteMatrix(var.get()))
         buttonCopy.pack(anchor=W)
 
-        self.textArea.addMatrixDisplay(self.frame, text="hello")
-        
+        self.radioButtonSelected(var.get())
+
         window.grid(row=0, column=0, sticky=N + S + E + W)
         self.frame.grid(row=0, column=1, sticky=N + S + E + W)

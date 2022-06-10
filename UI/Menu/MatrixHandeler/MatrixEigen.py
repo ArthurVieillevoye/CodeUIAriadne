@@ -75,7 +75,7 @@ class MatrixEigen:
 
     def matrixSelected(self, event):
         self.selectedMatrix = self.allMyMmatrices[self.options.index(self.comboBox.get())][0]
-        self.textArea.addMatrixDisplay(self.frame, text="helloEigen")
+        self.textArea.addMatrixDisplay(self.frame, text=str(self.selectedMatrix))
         print(self.selectedMatrix)
 
 
@@ -84,6 +84,7 @@ class MatrixEigen:
         matrixList = []
 
         for i in range(len(self.allMyMmatrices)):
-            text = self.allMyMmatrices[i][1] + ': ' + str(np.shape(self.allMyMmatrices[i][0]))
+            text = self.allMyMmatrices[i][1] + ': (' + str(self.allMyMmatrices[i][0].row_size()) + " " + \
+                   str(self.allMyMmatrices[i][0].column_size()) + ")"
             matrixList.append((text))
         return matrixList

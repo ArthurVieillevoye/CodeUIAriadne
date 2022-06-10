@@ -106,9 +106,9 @@ class MatrixMult:
     def matrixSelected(self, event):
         self.text = self.text + self.allMyMmatrices[self.options.index(self.comboBox.get())][1]
         self.operands.append(self.allMyMmatrices[self.options.index(self.comboBox.get())][1])
-        # self.selectedMatrix = self.allMyMmatrices[self.options.index(self.comboBox.get())][0]
+        self.selectedMatrix = self.allMyMmatrices[self.options.index(self.comboBox.get())][0]
         # print(self.selectedMatrix)
-        self.textArea.addMatrixDisplay(self.frame, text="hello")
+        self.textArea.addMatrixDisplay(self.frame, text=str(self.selectedMatrix))
         self.printOnTextArea(self.text)
 
     def transpose(self):

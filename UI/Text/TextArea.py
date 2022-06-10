@@ -15,11 +15,6 @@ class MainTextArea:
         Create and add the main text area to the root window.
         :param root: The window on which the textArea has to appear.
         """
-        #
-        # def multiple_yview(*args):
-        #     l.changeView(*args)
-        #     self.text.yview(*args)
-
         # Generating the frame
         frame = Frame(root)
         # frame.pack(pady=5)
@@ -31,17 +26,18 @@ class MainTextArea:
         hScroll.pack(side=BOTTOM, fill=X)
 
         # Create the text area
-        self.text = Text(frame, undo=True, width=45, height=9, wrap=NONE,
+        self.textArea = Text(frame, undo=True, width=45, height=9, wrap=NONE,
                          yscrollcommand=scroll.set, xscrollcommand=hScroll.set)
 
-        self.text.config(state="normal")
-        self.textOutput.delete("1.0", END)
-        self.text.insert(END, text)
-        self.text.config(state='disabled')
+        text = text.replace(";", ";\n")
+        self.textArea.config(state="normal")
+        self.textArea.delete("1.0", END)
+        self.textArea.insert(END, text)
+        self.textArea.config(state='disabled')
 
-        self.text.pack(side=LEFT, fill=BOTH, expand=True)
+        self.textArea.pack(side=LEFT, fill=BOTH, expand=True)
         # scroll.config(command=multiple_yview)
-        hScroll.config(command=self.text.xview)
+        hScroll.config(command=self.textArea.xview)
         frame.grid(row=0, column=2, rowspan=20, sticky=N+E+W)
 
 
