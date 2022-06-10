@@ -32,7 +32,7 @@ class Matrices:
         self.textArea.printInOutputArea(sentence)
 
     def writeOnFile(self, lst):
-        with open('MatrixDatabase.txt', 'w') as fp:
+        with open('UI/MatrixDatabase.txt', 'w') as fp:
             fp.truncate(0)
 
             fp.write('\n'.join('{};{}'.format(repr(x[0]), x[1]) for x in lst))
@@ -42,15 +42,18 @@ class Matrices:
     def readDatabaseFromFile(self):
         mylist = []
         try:
-            with open('MatrixDatabase.txt') as f:
+            with open('UI/MatrixDatabase.txt') as f:
                 for i in f:
                     a, b = i.split(';')
                     b = b.replace('\n', '')
-                    mylist.append((FloatDPApproximationMatrix(eval(a), dp), b))
+                    print(a)
+                    mylist.append((eval(a), b))
+                    print('myList: ', mylist)
                 f.close()
-            print(type(mylist[0][0]))
         except:
             pass
+
+        # print('myList: ', mylist)
         return mylist
 
     def showSelectedMatrix(self, i):

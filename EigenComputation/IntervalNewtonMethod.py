@@ -1,16 +1,13 @@
 from pyariadne import *
+from Householder import *
 
-
-# print(dir())
-
-######################
 
 def f(A, v, lamb):
     c = A * v - lamb * v
     # print(len(c))
     # print(transpose(c))
     # print(type(1 - (transpose(v) * v)))
-    f = join(c, 1 - (transpose(v) * v)/FloatDPApproximation(2, dp)) # TODO: need to divide by 2 the vT*v
+    f = join(c, 1 - (transpose(v) * v)/FloatDPBounds(2, dp))
     return f
 
 
@@ -41,60 +38,39 @@ def getIFirstElementsInVector(v, i):
 def maxLenghtBounds(v):
     maxRange = FloatDPApproximation(v[0].upper()) - FloatDPApproximation(v[0].lower())
     for i in range (1, len(v)):
-        if FloatDPApproximation(v[i].upper()) - FloatDPApproximation(v[i].lower()) > maxRange:
+        print(v[0].upper() - v[0].lower())
+        if cast_exact(v[0].upper() - v[0].lower()) > cast_exact(maxRange):
             maxRange = FloatDPApproximation(v[i].upper()) - FloatDPApproximation(v[i].lower())
 
     return maxRange
 
-
-# def intervalNewtonMethod(A, vect, lamb):
-#     assert (type(lamb) == FloatDPBounds or type(lamb) == FloatMPBounds)
-#     e = 1
-#     # e = FloatDPBoundsVector([FloatDPBounds(3, 1, dp), FloatDPBounds(3, 1, dp)])
-#
-#     v1 = vect + e
-#     v2 = (vect + e) / FloatDPBounds(2, dp)
-#
-#     v = join(v1, v2)
-#
-#     v = cast_exact(v) - solve(df(A, v, lamb), f(A, v, lamb))
-
-
 if __name__ == '__main__':
     #A = FloatDPBoundsMatrix([[2,-1,1],[-1,3,2],[1,2,3]], dp)
-    A = FloatDPBoundsMatrix([[3,-1,1],[-1,4,2],[1,2,5]], dp)
-    eps = 0.001
-    eps=0
-    # v = FloatDPBoundsVector([{x_(1 - eps): x_(1 + eps)}, {x_(-1): x_(-1 + eps)}, {x_(-1): x_(-1 + eps)}], dp)
-    v = FloatDPBoundsVector([{63:64},{59:60},{-50:-49}],dp)/FloatDPBounds(100,dp)
+    A = FloatDPApproximationMatrix([[12,-51,4], [6,167,-68], [-4,24,-41]], dp)
+    eigenval, eigenvect = findEigenAriadne(A)
 
-    # lamb = FloatDPBounds(Decimal(1.2),Decimal(1.3),dp)
-    lamb = FloatDPBounds(10, 11, dp) / 10
+    v = getColumn(0, eigenvect)
+    lamb = eigenval[0]
+
+    eps = FloatDPValue(Dyadic(1,20), dp)
+    v = cast_exact(v) + FloatDPBoundsVector(len(v), FloatDPBounds(-eps, +eps, dp))
+    lamb = cast_exact(lamb) + FloatDPBounds(-eps, +eps, dp)
+    A = cast_exact(A) + FloatDPBoundsMatrix(A.column_size(), A.row_size(), FloatDPBounds(-eps, +eps, dp))
+
+    print("types", type(v), type(lamb), type(A))
+
 
     print("v:",v)
     print("inv(A)",inverse(A))
     assert (type(lamb) == FloatDPBounds or type(lamb) == FloatMPBounds)
-    # e = 1
-    # e = FloatDPBoundsVector([1, 1], dp)
-    #
-    # v1 = v - e
-    # v2 = (v + e)
 
+    precision = cast_exact(FloatDPApproximation("0.00000000000000001", dp))
 
-    # I=FloatDPBoundsMatrix.identity(3,dp)
-    # z=FloatDPBounds(0,dp)
-    # J=join(cojoin(A-lamb*I,v),cojoin(transpose(v),z))
-    # print("J:", J)
-    # print("inv(J)",inverse(J))
-    # v = join(v1, v2)
-    # print(len(v))
-    # print(v)
-    precision = 0.0001
-    while maxLenghtBounds(v) > precision:
-        # TODO: find the boolean value.
+    while cast_exact(maxLenghtBounds(v)) > precision:
 
         dfx = df(A, v, lamb)
         fx = f(A, FloatDPBoundsVector(cast_exact(v)), FloatDPBounds(cast_exact(lamb)))
+        # fx = fx + FloatDPBoundsVector(len(fx), FloatDPBounds(-0, +0, dp))
         # print(df.column_size(), ' ++++++', df.row_size())
         print(len(fx))
 
@@ -113,6 +89,7 @@ if __name__ == '__main__':
         vBound = getIFirstElementsInVector(deltax, len(deltax)-1)
         print("vBounds", vBound)
         newV = cast_exact(v) - vBound
+        newLamb = cast_exact(lamb) - lambBound
 
         print("oldV: ", v)
         print("newV: ", newV)
@@ -121,10 +98,11 @@ if __name__ == '__main__':
         elif refines(newV, v):
             print("There is only one solution")
             newV = refinement(newV, v)
+            newLamb = refinement(newLamb, lamb)
         else:
             newV = refinement(newV, v)
+            newLamb = refinement(newLamb, lamb)
 
+        print("A*v", A*cast_exact(newV))
+        print("lamb*v", cast_exact(newLamb)*cast_exact(newV))
         break
-
-    print("newV:", newV)
-

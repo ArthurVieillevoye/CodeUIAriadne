@@ -1,7 +1,7 @@
 from tkinter import *
-from Menu import MenuTopBar
-from Text import TextArea
-from Menu import MenuLeftBar
+from UI.Menu import MenuTopBar
+from UI.Text import TextArea
+from UI.Menu import MenuLeftBar
 
 """
 This is the Main file of the programm. This launch the User Interface.
