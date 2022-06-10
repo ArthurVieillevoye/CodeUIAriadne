@@ -46,14 +46,10 @@ class Matrices:
                 for i in f:
                     a, b = i.split(';')
                     b = b.replace('\n', '')
-                    print(a)
                     mylist.append((eval(a), b))
-                    print('myList: ', mylist)
                 f.close()
         except:
             pass
-
-        # print('myList: ', mylist)
         return mylist
 
     def showSelectedMatrix(self, i):
@@ -139,7 +135,7 @@ class Matrices:
             Radiobutton(window, text=text, padx=20, variable=var, value=i).pack(anchor=W)
             # TODO: Add the name of the matrix.
 
-        buttonSee = Button(window, text="See Matrix", width=10, padx=5, pady=5,
+        buttonSee = Button(window, text="Modify Matrix", width=10, padx=5, pady=5,
                            command=lambda: self.showSelectedMatrix(var.get()))
         buttonSee.pack(anchor=W)
         buttonSee = Button(window, text="Print Matrix", width=10, padx=5, pady=5,

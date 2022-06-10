@@ -31,27 +31,30 @@ class MatrixEigen:
         self.frame.grid(row=0, column=1, sticky=N + S + E + W)
 
     def allEigenButtonActive(self, eigenVectors, eigenValues):
-        for label in self.frame.grid_slaves():
-            if int(label.grid_info()["column"]) > 0:
-                label.destroy()
+        try:
+            for label in self.frame.grid_slaves():
+                if int(label.grid_info()["column"]) > 0:
+                    label.destroy()
 
-        label = Label(self.frame, text="Found estimate: ")
-        label.grid(row=2, column=1)
+            label = Label(self.frame, text="Found estimate: ")
+            label.grid(row=2, column=1)
 
-        var = IntVar()
-        window = Frame(self.frame)
-        for i in range(len(eigenValues)):
-            text = str(eigenValues[i]) + " : " + str(eigenVectors[:,i])
-            Radiobutton(window, text=text, padx=20, variable=var, value=i).pack(anchor=W)
+            var = IntVar()
+            window = Frame(self.frame)
+            for i in range(len(eigenValues)):
+                text = str(eigenValues[i]) + " : " + str(eigenVectors[:,i])
+                Radiobutton(window, text=text, padx=20, variable=var, value=i).pack(anchor=W)
 
-        window.grid(row=3, column=1, rowspan=50, sticky=N + S + E + W)
+            window.grid(row=3, column=1, rowspan=50, sticky=N + S + E + W)
 
-        buttonCopy = Button(self.frame,  text="copy bound", width=8, padx=5, pady=5)
-        buttonCopy.grid(row=3, column=2)
-        buttonPrint = Button(self.frame, text="Print bound", width=8, padx=5, pady=5)
-        buttonPrint.grid(row=4, column=2)
-        buttonMiddle = Button(self.frame, text="Get mid-point", width=8, padx=5, pady=5)
-        buttonMiddle.grid(row=5, column=2)
+            buttonCopy = Button(self.frame,  text="copy bound", width=8, padx=5, pady=5)
+            buttonCopy.grid(row=3, column=2)
+            buttonPrint = Button(self.frame, text="Print bound", width=8, padx=5, pady=5)
+            buttonPrint.grid(row=4, column=2)
+            buttonMiddle = Button(self.frame, text="Get mid-point", width=8, padx=5, pady=5)
+            buttonMiddle.grid(row=5, column=2)
+        except:
+            self.textArea.printInOutputArea("Error: No matrix selected")
 
     def oneEigenButtonActive(self):
         for label in self.frame.grid_slaves():
@@ -72,6 +75,7 @@ class MatrixEigen:
 
     def matrixSelected(self, event):
         self.selectedMatrix = self.allMyMmatrices[self.options.index(self.comboBox.get())][0]
+        self.textArea.addMatrixDisplay(self.frame, text="helloEigen")
         print(self.selectedMatrix)
 
 

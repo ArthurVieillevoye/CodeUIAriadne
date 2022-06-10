@@ -10,15 +10,15 @@ class MainTextArea:
     It is also responsible for all the options relative to the textArea.
     """
 
-    def addTextArea(self, root):
+    def addMatrixDisplay(self, root, text= ''):
         """
         Create and add the main text area to the root window.
         :param root: The window on which the textArea has to appear.
         """
-
-        def multiple_yview(*args):
-            l.changeView(*args)
-            self.text.yview(*args)
+        #
+        # def multiple_yview(*args):
+        #     l.changeView(*args)
+        #     self.text.yview(*args)
 
         # Generating the frame
         frame = Frame(root)
@@ -31,26 +31,30 @@ class MainTextArea:
         hScroll.pack(side=BOTTOM, fill=X)
 
         # Create the text area
-        self.text = Text(frame, undo=True, width=150, height=30, wrap=NONE,
+        self.text = Text(frame, undo=True, width=45, height=9, wrap=NONE,
                          yscrollcommand=scroll.set, xscrollcommand=hScroll.set)
 
+        self.text.config(state="normal")
+        self.textOutput.delete("1.0", END)
+        self.text.insert(END, text)
+        self.text.config(state='disabled')
         # Add the line numbers:
-        l = LineNumber(frame)
-        l.addLineNumber()
+        # l = LineNumber(frame)
+        # l.addLineNumber()
 
         # Bind any line adding to the update of the line number.
-        root.bind_all('<Return>', lambda event: l.redraw(self.text))
-        root.bind_all('<BackSpace>', lambda event: l.redraw(self.text))
-        root.bind_all('<Key>', lambda event: l.redraw(self.text))
-        root.bind_all('<Button-4>', lambda event: l.redraw(self.text))
-        root.bind_all('<Button-5>', lambda event: l.redraw(self.text))
-        root.bind_all('<Configure>', lambda event: l.redraw(self.text))
-        root.bind_all('<Motion>', lambda event: l.redraw(self.text))
+        # root.bind_all('<Return>', lambda event: l.redraw(self.text))
+        # root.bind_all('<BackSpace>', lambda event: l.redraw(self.text))
+        # root.bind_all('<Key>', lambda event: l.redraw(self.text))
+        # root.bind_all('<Button-4>', lambda event: l.redraw(self.text))
+        # root.bind_all('<Button-5>', lambda event: l.redraw(self.text))
+        # root.bind_all('<Configure>', lambda event: l.redraw(self.text))
+        # root.bind_all('<Motion>', lambda event: l.redraw(self.text))
 
         self.text.pack(side=LEFT, fill=BOTH, expand=True)
-        scroll.config(command=multiple_yview)
+        # scroll.config(command=multiple_yview)
         hScroll.config(command=self.text.xview)
-        frame.grid(row=0, column=1, sticky=N+S+E+W)
+        frame.grid(row=0, column=2, rowspan=20, sticky=N+E+W)
 
 
     def addOutputArea(self, root):
