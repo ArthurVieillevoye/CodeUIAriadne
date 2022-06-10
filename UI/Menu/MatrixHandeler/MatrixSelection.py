@@ -147,5 +147,7 @@ class Matrices:
                             command=lambda: self.deleteMatrix(var.get()))
         buttonCopy.pack(anchor=W)
 
+        self.textArea.addMatrixDisplay(self.frame, text="hello")
+        
         window.grid(row=0, column=0, sticky=N + S + E + W)
         self.frame.grid(row=0, column=1, sticky=N + S + E + W)

@@ -38,18 +38,6 @@ class MainTextArea:
         self.textOutput.delete("1.0", END)
         self.text.insert(END, text)
         self.text.config(state='disabled')
-        # Add the line numbers:
-        # l = LineNumber(frame)
-        # l.addLineNumber()
-
-        # Bind any line adding to the update of the line number.
-        # root.bind_all('<Return>', lambda event: l.redraw(self.text))
-        # root.bind_all('<BackSpace>', lambda event: l.redraw(self.text))
-        # root.bind_all('<Key>', lambda event: l.redraw(self.text))
-        # root.bind_all('<Button-4>', lambda event: l.redraw(self.text))
-        # root.bind_all('<Button-5>', lambda event: l.redraw(self.text))
-        # root.bind_all('<Configure>', lambda event: l.redraw(self.text))
-        # root.bind_all('<Motion>', lambda event: l.redraw(self.text))
 
         self.text.pack(side=LEFT, fill=BOTH, expand=True)
         # scroll.config(command=multiple_yview)
@@ -101,34 +89,34 @@ class MainTextArea:
         return self.text
 
 
-class LineNumber:
-    """
-    This class defines the lineCount element next to the textArea.
-    """
-    def __init__(self, root):
-        self.lineNumber = Canvas(root, width="30")
-
-    def addLineNumber(self):
-        # Add the element containing the number of line to the window.
-        self.lineNumber.pack(side=LEFT, fill=Y)
-
-    def redraw(self, textWidgit, event=NONE):
-        """
-        Update the number of line element in case of modification of the size of the file.
-        """
-        count = textWidgit.get('1.0', END)
-        self.lineNumber.delete("all")
-        objectIds = []
-        si = textWidgit.index("@0,0")
-        while True:
-            dline = textWidgit.dlineinfo(si)
-            if dline is None:
-                break
-            y = dline[1]
-            liNum = str(si).split(".")[0]
-            self.lineNumber.create_text(
-                2, y, anchor="nw", text=liNum, )
-            si = textWidgit.index(f"{si}+1line")
-
-    def changeView(self, *args):
-        self.lineNumber.yview(*args)
+# class LineNumber:
+#     """
+#     This class defines the lineCount element next to the textArea.
+#     """
+#     def __init__(self, root):
+#         self.lineNumber = Canvas(root, width="30")
+#
+#     def addLineNumber(self):
+#         # Add the element containing the number of line to the window.
+#         self.lineNumber.pack(side=LEFT, fill=Y)
+#
+#     def redraw(self, textWidgit, event=NONE):
+#         """
+#         Update the number of line element in case of modification of the size of the file.
+#         """
+#         count = textWidgit.get('1.0', END)
+#         self.lineNumber.delete("all")
+#         objectIds = []
+#         si = textWidgit.index("@0,0")
+#         while True:
+#             dline = textWidgit.dlineinfo(si)
+#             if dline is None:
+#                 break
+#             y = dline[1]
+#             liNum = str(si).split(".")[0]
+#             self.lineNumber.create_text(
+#                 2, y, anchor="nw", text=liNum, )
+#             si = textWidgit.index(f"{si}+1line")
+#
+#     def changeView(self, *args):
+#         self.lineNumber.yview(*args)
