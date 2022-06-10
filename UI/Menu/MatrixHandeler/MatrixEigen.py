@@ -74,6 +74,10 @@ class MatrixEigen:
 
 
     def matrixSelected(self, event):
+        for label in self.frame.grid_slaves():
+            if int(label.grid_info()["column"]) > 0:
+                label.destroy()
+
         self.selectedMatrix = self.allMyMmatrices[self.options.index(self.comboBox.get())][0]
         self.textArea.addMatrixDisplay(self.frame, text=str(self.selectedMatrix))
         print(self.selectedMatrix)

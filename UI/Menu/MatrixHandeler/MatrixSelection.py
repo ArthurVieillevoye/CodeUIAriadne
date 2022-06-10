@@ -14,8 +14,14 @@ class Matrices:
         self.histcol = 0
 
     def gtc(self, i):
+        for label in self.frame.grid_slaves():
+            if int(label.grid_info()["column"]) > 0:
+                label.destroy()
+
         self.root.clipboard_clear()
-        self.root.clipboard_append(self.matrices[i][0])
+        self.root.clipboard_append(self.selectedMatrix)
+        print(type(self.selectedMatrix))
+        self.textArea.addMatrixDisplay(self.frame, str(self.selectedMatrix))
 
     def addMatrix(self, matrix, name=''):
         if name != '':
@@ -28,8 +34,13 @@ class Matrices:
         return self.matrices
 
     def printMatrix(self, i):
+        for label in self.frame.grid_slaves():
+            if int(label.grid_info()["column"]) > 0:
+                label.destroy()
+
         sentence = "Matrix : " + self.matrices[i][1] + " = " + repr(self.matrices[i][0]) + '\n'
         self.textArea.printInOutputArea(sentence)
+        self.textArea.addMatrixDisplay(self.frame, str(self.selectedMatrix))
 
     def writeOnFile(self, lst):
         with open('UI/MatrixDatabase.txt', 'w') as fp:
@@ -53,21 +64,20 @@ class Matrices:
         return mylist
 
     def showSelectedMatrix(self, i):
+        for label in self.frame.grid_slaves():
+            if int(label.grid_info()["column"]) > 0:
+                label.destroy()
+
         window = Frame(self.frame)
 
-        matrix = self.matrices[i][0]
-        m = matrix.row_size()
-        n = matrix.column_size()
+        # matrix = self.matrices[i][0]
+        m = self.selectedMatrix.row_size()
+        n = self.selectedMatrix.column_size()
         if self.histrow != int(m) or self.histcol != int(n):
             self.histrow = int(m)
             self.histcol = int(n)
             self.row = int(m)
             self.col = int(n)
-
-        # Delete all the elements previously present on the grid.
-        # for label in self.root.grid_slaves():
-        #     if int(label.grid_info()["column"]) > 3:
-        #         label.destroy()
 
         # Show the column numbers
         for c in range(self.col):
@@ -84,7 +94,7 @@ class Matrices:
             for c in range(self.col):
                 singleEntry = Entry(window, width=5)  # 5 chars
                 try:
-                    singleEntry.insert('end', matrix[r, c])
+                    singleEntry.insert('end', self.selectedMatrix[r, c])
                 except:
                     singleEntry.insert('end', 0)
                 singleEntry.grid(row=r, column=c + 1)
@@ -120,6 +130,10 @@ class Matrices:
             self.addMatrix(demand, selectedMatrix[1])
 
     def deleteMatrix(self, i):
+        # for label in self.frame.grid_slaves():
+        #     if int(label.grid_info()["column"]) > 0:
+        #         label.destroy()
+
         self.matrices.pop(i)
         self.writeOnFile(self.matrices)
         for el in self.frame.grid_slaves():
@@ -128,7 +142,12 @@ class Matrices:
         self.seeMatrices()
 
     def radioButtonSelected(self, i):
-        self.textArea.addMatrixDisplay(self.frame, str(self.matrices[i][0]))
+        for label in self.frame.grid_slaves():
+            if int(label.grid_info()["column"]) > 0:
+                label.destroy()
+
+        self.selectedMatrix = self.matrices[i][0]
+        self.textArea.addMatrixDisplay(self.frame, str(self.selectedMatrix))
 
 
     def seeMatrices(self):
