@@ -3,6 +3,8 @@ from tkinter.ttk import Combobox
 import numpy as np
 from EigenComputation import Householder
 from EigenComputation import IntervalNewtonMethod
+from EigenComputation import EigenVecotrs
+from pyariadne import *
 
 
 class MatrixEigen:
@@ -33,20 +35,20 @@ class MatrixEigen:
         self.frame.grid(row=0, column=1, sticky=N + S + E + W)
 
     def allEigenButtonActive(self):
-        # try:
-        eigenValues, eigenVectors = Householder.findEigenAriadne(self.selectedMatrix)
+        try:
+            eigenValues, eigenVectors = Householder.findEigenAriadne(self.selectedMatrix)
 
-        eigenValuesList = []
-        eigenVectorList = []
-        print("type eigenValues", type(eigenValues))
-        for i in range(len(eigenValues)):
-            eigenVect, eigenVal = IntervalNewtonMethod.intervalNewtonMethods(Householder.getColumn(i, eigenVectors),
-                                                                             eigenValues[i], self.selectedMatrix)
-            eigenValuesList.append(eigenVal)
-            eigenVectorList.append(eigenVect)
-        self.displayFoundEigen(eigenVectorList, eigenValuesList)
-        # except:
-        #     self.textArea.printInOutputArea("Error: No matrix selected")
+            eigenValuesList = []
+            eigenVectorList = []
+            print("type eigenValues", type(eigenValues))
+            for i in range(len(eigenValues)):
+                eigenVect, eigenVal = IntervalNewtonMethod.intervalNewtonMethods(Householder.getColumn(i, eigenVectors),
+                                                                                 eigenValues[i], self.selectedMatrix)
+                eigenValuesList.append(eigenVal)
+                eigenVectorList.append(eigenVect)
+            self.displayFoundEigen(eigenVectorList, eigenValuesList)
+        except:
+            self.textArea.printInOutputArea("Error: No matrix selected")
 
 
     def displayFoundEigen(self, eigenVectors, eigenValues):
@@ -76,23 +78,61 @@ class MatrixEigen:
 
 
     def oneEigenButtonActive(self):
-        for label in self.frame.grid_slaves():
-            if int(label.grid_info()["column"]) > 0:
-                label.destroy()
+        try:
+            self.selectedMatrix.row_size()
+            for label in self.frame.grid_slaves():
+                if int(label.grid_info()["column"]) > 0:
+                    label.destroy()
 
-        label = Label(self.frame, text = "eigenvalue estimate (optional): ")
-        label.grid(row=2, column=1)
-        entry = Entry(self.frame, width=30)
-        # entry.insert(END, "1")
-        entry.grid(row=3, column=1)
-        label = Label(self.frame, text="Eigenvector estimate (optional): ")
-        label.grid(row=2, column=1)
-        entry = Entry(self.frame, width=30)
-        # entry.insert(END, "1")
-        entry.grid(row=3, column=1)
+            label = Label(self.frame, text = "eigenvalue estimate (optional): ")
+            label.grid(row=2, column=1)
+            self.entry1 = Entry(self.frame, width=30)
+            # entry.insert(END, "1")
+            self.entry1.grid(row=3, column=1)
+            label = Label(self.frame, text="Eigenvector estimate (optional): ")
+            label.grid(row=4, column=1)
+            self.entry2 = Entry(self.frame, width=30)
+            # entry.insert(END, "1")
+            self.entry2.grid(row=5, column=1)
 
-        computerEigenButton = Button(self.frame, text="get Eigen", padx=5, pady=5)
-        computerEigenButton.grid(row=4, column=1)
+            computerEigenButton = Button(self.frame, text="get Eigen", padx=5, pady=5, command= self.getEigenComputed)
+            computerEigenButton.grid(row=6, column=1)
+        except:
+            self.textArea.printInOutputArea("Error: No matrix selected")
+
+    def getEigenComputed(self):
+        matrix = []
+        if self.entry1.get() !='' and self.entry2.get() !='':
+            print("hello", self.entry1.get())
+            eigenValEstimate = FloatDPApproximation(eval(self.entry1.get()), dp)
+            eigenVectEstimate = self.decodeEnteredMatrix(self.entry2.get())
+            eigenVect, eigenVal = IntervalNewtonMethod.intervalNewtonMethods(eigenVectEstimate, eigenValEstimate, self.selectedMatrix)
+            self.displayFoundEigen([eigenVect], [eigenVal])
+
+        else:
+            eigenValEstimate, eigenVectEstimate = EigenVecotrs.power_methods(self.selectedMatrix)
+            eigenVect, eigenVal = IntervalNewtonMethod.intervalNewtonMethods(eigenVectEstimate, eigenValEstimate, self.selectedMatrix)
+            self.displayFoundEigen([eigenVect], [eigenVal])
+
+
+    def decodeEnteredMatrix(self, matrix):
+        try:
+            return FloatDPApproximationMatrix(myMatrix, dp)
+        except:
+            try:
+                myMatrix = []
+                matrix = matrix.replace("[", "")
+                matrix = matrix.replace("]", "")
+                matrix = matrix.replace(" ", "")
+
+                matrix = matrix.split(';')
+                for el in matrix:
+                    listTmp = '[' + el + ']'
+                    myMatrix.append(eval(listTmp))
+                print(myMatrix)
+                return FloatDPApproximationMatrix(myMatrix, dp)
+            except:
+                self.textArea.printInOutputArea('You did not enter the eigenvector approximation in a correct form')
 
 
     def matrixSelected(self, event):
