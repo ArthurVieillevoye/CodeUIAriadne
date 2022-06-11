@@ -241,8 +241,9 @@ def DecompositionQRAriadne(A):
 
     QTot = Q[0] * Q[1]
     for i in range(2, len(Q)):
-        QTot = QTot, Q[i]
+        QTot = QTot * Q[i]
 
+    print("hello", type(QTot))
     # Compute the R matrix
     R = transpose(QTot) * A
     # R = np.round(R, 10)
@@ -269,7 +270,6 @@ def findEigenAriadne(A):
         Q, R = DecompositionQRAriadne(X)
         pQ = pQ * Q
         X = R * Q
-        #TODO: instead of 100, check for A-diag(A) approx 0: Put tolerance as input
 
 
     eigenVal = getDiagonalElementAriadne(X)
@@ -278,7 +278,7 @@ def findEigenAriadne(A):
 
 
 # A = np.array([[52, 30, 49, 28], [30, 50, 8, 44], [49, 8, 46, 16], [28, 44, 16, 22]])
-A = np.array([[12,-51,4], [6,167,-68], [-4,24,-41]])
+# A = np.array([[12,-51,4], [6,167,-68], [-4,24,-41]])
 # A = np.array([[60, 91, 26], [60, 3, 75], [45, 90, 31]])
 # A = np.array([[12,-51,14,11], [16,167,-68,11], [-14,24,-41,11], [-4,24,-41,11]])
 
@@ -286,19 +286,20 @@ A = np.array([[12,-51,4], [6,167,-68], [-4,24,-41]])
 # print(eigenVal)
 # print(eigenVect)
 
-print(A)
-print(findEigen(A))
-A = FloatDPApproximationMatrix([[12,-51,4], [6,167,-68], [-4,24,-41]], dp)
-print(A)
-eigenval, eigenvect = findEigenAriadne(A)
-print("$$$$$$$$$$$$$$$$$$$")
-print(eigenval)
-print(eigenvect)
-
-print("$$$$$$$$$$$$$$$$$$$")
-print(getColumn(0, eigenvect))
-print(eigenval[0]*getColumn(0, eigenvect))
-print(A*getColumn(0, eigenvect))
+# print(A)
+# print(findEigen(A))
+# A = FloatDPApproximationMatrix([[12,-51,4], [6,167,-68], [-4,24,-41]], dp)
+# A = FloatDPApproximationMatrix([[52, 30, 49, 28], [30, 50, 8, 44], [49, 8, 46, 16], [28, 44, 16, 22]], dp)
+# # print(A)
+# eigenval, eigenvect = findEigenAriadne(A)
+# print("$$$$$$$$$$$$$$$$$$$")
+# # print(eigenval)
+# # print(eigenvect)
+#
+# # print("$$$$$$$$$$$$$$$$$$$")
+# print(getColumn(0, eigenvect))
+# print(eigenval[0]*getColumn(0, eigenvect))
+# print(A*getColumn(0, eigenvect))
 
 # print(eigenVal[0])
 # print(np.array([eigenVect[:,0]]).T)

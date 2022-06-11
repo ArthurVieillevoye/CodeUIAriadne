@@ -1,5 +1,5 @@
 from pyariadne import *
-from Householder import *
+from EigenComputation import Householder
 
 
 def f(A, v, lamb):
@@ -44,49 +44,48 @@ def maxLenghtBounds(v):
 
     return maxRange
 
-if __name__ == '__main__':
-    #A = FloatDPBoundsMatrix([[2,-1,1],[-1,3,2],[1,2,3]], dp)
-    A = FloatDPApproximationMatrix([[12,-51,4], [6,167,-68], [-4,24,-41]], dp)
-    eigenval, eigenvect = findEigenAriadne(A)
+def intervalNewtonMethods(v,lamb, A):
+    print("v", v)
+    print("A*v", A * cast_exact(v))
+    print("lamb*v", lamb * v)
 
-    v = getColumn(0, eigenvect)
-    lamb = eigenval[0]
-
-    eps = FloatDPValue(Dyadic(1,20), dp)
+    eps = FloatDPValue(Dyadic(1, 10), dp)
     v = cast_exact(v) + FloatDPBoundsVector(len(v), FloatDPBounds(-eps, +eps, dp))
     lamb = cast_exact(lamb) + FloatDPBounds(-eps, +eps, dp)
     A = cast_exact(A) + FloatDPBoundsMatrix(A.column_size(), A.row_size(), FloatDPBounds(-eps, +eps, dp))
 
     print("types", type(v), type(lamb), type(A))
+    # print("A*v", A * cast_exact(v))
+    # print("lamb*v", cast_exact(lamb) * cast_exact(v))
 
 
-    print("v:",v)
-    print("inv(A)",inverse(A))
+    print("v:", v)
+    print("inv(A)", inverse(A))
     assert (type(lamb) == FloatDPBounds or type(lamb) == FloatMPBounds)
 
-    precision = cast_exact(FloatDPApproximation("0.00000000000000001", dp))
+    # precision = cast_exact(FloatDPApproximation("0.00000000000000001", dp))
 
-    while cast_exact(maxLenghtBounds(v)) > precision:
+    for i in range(5):
 
         dfx = df(A, v, lamb)
         fx = f(A, FloatDPBoundsVector(cast_exact(v)), FloatDPBounds(cast_exact(lamb)))
-        # fx = fx + FloatDPBoundsVector(len(fx), FloatDPBounds(-0, +0, dp))
+        fx = fx + FloatDPBoundsVector(len(fx), FloatDPBounds(-0, +0, dp))
         # print(df.column_size(), ' ++++++', df.row_size())
         print(len(fx))
 
         print("dfx:", dfx, type(dfx))
         print("fx:", fx, type(fx))
 
-        print("inv(dfx):",inverse(dfx))
+        print("inv(dfx):", inverse(dfx))
         deltax = solve(dfx, fx)
         print(type(deltax))
-        print("deltax:",deltax,type(deltax))
+        print("deltax:", deltax, type(deltax))
 
-        print((cast_exact(v)))
-        print(lamb)
+        # print((cast_exact(v)))
+        # print(lamb)
 
-        lambBound = deltax[len(deltax)-1]
-        vBound = getIFirstElementsInVector(deltax, len(deltax)-1)
+        lambBound = deltax[len(deltax) - 1]
+        vBound = getIFirstElementsInVector(deltax, len(deltax) - 1)
         print("vBounds", vBound)
         newV = cast_exact(v) - vBound
         newLamb = cast_exact(lamb) - lambBound
@@ -103,6 +102,20 @@ if __name__ == '__main__':
             newV = refinement(newV, v)
             newLamb = refinement(newLamb, lamb)
 
-        print("A*v", A*cast_exact(newV))
-        print("lamb*v", cast_exact(newLamb)*cast_exact(newV))
-        break
+        v = newV
+        lamb = newLamb
+
+    print("A*v", A * cast_exact(newV))
+    print("lamb*v", cast_exact(newLamb) * cast_exact(newV))
+
+    return v, lamb
+
+if __name__ == '__main__':
+    A = FloatDPBoundsMatrix([[2,-1,1],[-1,3,2],[1,2,3]], dp)
+    # A = FloatDPApproximationMatrix([[12,-51,4], [6,167,-68], [-4,24,-41]], dp)
+    eigenval, eigenvect = Householder.findEigenAriadne(A)
+
+    v = Householder.getColumn(0, eigenvect)
+    lamb = eigenval[0]
+
+    intervalNewtonMethods(v, lamb, A)
