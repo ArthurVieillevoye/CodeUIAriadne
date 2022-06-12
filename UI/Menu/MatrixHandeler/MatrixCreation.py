@@ -167,12 +167,8 @@ class MatrixCreationWindow:
                     self.textArea.printInOutputArea('You did not enter the matrix in a correct form')
 
 ###################################################################
-#   SECTION UPLOAD FILE
+#   SECTION Enter matrix in grid.
 ###################################################################
-
-
-
-
 
     def addMatrixWindow(self):
         """
@@ -200,16 +196,12 @@ class MatrixCreationWindow:
         buttonCreateMatrix = Button(self.newMatrixFrame, text="Enter Size", padx=5, pady=5, command=self.getRowAndColumnSize)
         buttonCreateMatrix.grid(row=0, column=3, sticky="ew")
 
-    def clearFrame(self):
-        for label in self.newMatrixFrame.grid_slaves():
-            if int(label.grid_info()["column"]) > 0:
-                label.destroy()
-
-
-
     def getRowAndColumnSize(self):
-        # Enter the column numbers.
+        """
+        This method is called when the user entered a matrix size.
+        """
         try:
+            # Check if the matrix size is entered correctly, update the matrix size.
             if self.histrow != int(self.e1.get()) or self.histcol != int(self.e2.get()):
                 self.histrow = int(self.e1.get())
                 self.histcol = int(self.e2.get())
@@ -217,11 +209,13 @@ class MatrixCreationWindow:
                 self.col = int(self.e2.get())
             self.updateMatrixWindow()
         except:
+            # Throw an arror if the matrix size is not correct.
             self.textArea.printInOutputArea('Error: The entered size is not an integer.')
 
     def updateMatrixWindow(self):
-
-        print(self.row, self.col)
+        """
+        Add the grid to the frame such that the user can enter the matrix.
+        """
         # Delete all the elements previously present on the grid.
         for label in self.newMatrixFrame.grid_slaves():
             if int(label.grid_info()["column"]) > 3:
@@ -240,8 +234,9 @@ class MatrixCreationWindow:
             l.grid(row=r, column=4)
             # Add the entries for the values.
             for c in range(self.col):
-                singleEntry = Entry(self.newMatrixFrame, width=5)  # 5 chars
-                # singleEntry.bind("<Button-1>", lambda e: self.updateIndexes(e, singleEntry))
+                singleEntry = Entry(self.newMatrixFrame, width=5)
+
+                # Binds the arrows to allow the user to navigate more easily into the grid.
                 singleEntry.bind("<Control-Left>", lambda e: self.left(e))
                 singleEntry.bind("<Control-Right>", lambda e: self.right(e))
                 singleEntry.bind("<Control-Up>", lambda e: self.up(e))
@@ -254,6 +249,7 @@ class MatrixCreationWindow:
                 entries_row.append(singleEntry)
             self.entries.append(entries_row)
 
+        # Add the buttons to the frame.
         saveButton = Button(self.newMatrixFrame, text='Save matrix', padx=5, pady=5, command=self.get_data)
         saveButton.grid(row=2, column=3, sticky="ew")
 
@@ -263,30 +259,46 @@ class MatrixCreationWindow:
         addColButton.grid(row=0, column=self.col + 6)
 
     def left(self, event):
+        """
+        This method is calledto change the entry when the user uses the left shortcut
+        """
         if self.entryColumns - 1 >= 0:
             self.entryColumns = self.entryColumns - 1
             self.entries[self.entryRow][self.entryColumns].focus()
             print(self.entryRow, self.entryColumns)
 
     def right(self, event):
+        """
+        This method is calledto change the entry when the user uses the right shortcut
+        """
         if self.entryColumns + 1 <= self.col:
             self.entryColumns = self.entryColumns + 1
             print(self.entryRow, self.entryColumns)
             self.entries[self.entryRow][self.entryColumns].focus()
 
     def up(self, event):
+        """
+        This method is calledto change the entry when the user uses the up shortcut
+        """
         if self.entryRow - 1 >= 0:
             self.entryRow = self.entryRow - 1
             print(self.entryRow, self.entryColumns)
             self.entries[self.entryRow][self.entryColumns].focus()
 
     def down(self, event):
+        """
+        This method is calledto change the entry when the user uses the down shortcut
+        """
         if self.entryRow + 1 <= self.row:
             self.entryRow = self.entryRow + 1
             print(self.entryRow, self.entryColumns)
             self.entries[self.entryRow][self.entryColumns].focus()
 
     def addRow(self):
+        """
+        Called when the user adds a row using the '+' button.
+        Add a row to the display to allowing the user to increase its matrix size while entering its matrix.
+        """
         self.entryRow = 0
         self.entryColumns = 0
         self.matrix = self.get_data(True)
@@ -294,6 +306,10 @@ class MatrixCreationWindow:
         self.updateMatrixWindow()
 
     def addCol(self):
+        """
+        Called when the user adds a row using the '+' button
+        Add a row to the display to allowing the user to increase its matrix size while entering its matrix.
+        """
         self.entryRow = 0
         self.entryColumns = 0
         self.matrix = self.get_data(True)
@@ -305,6 +321,7 @@ class MatrixCreationWindow:
         Get the elements entered into the grid created in the addMatrixWindow.
         Create a matrix from those elements.
         """
+        # Transform the entries into list of list.
         demand = np.zeros((self.row, self.col))
         for r, row in enumerate(self.entries):
             for c, entry in enumerate(row):
@@ -313,17 +330,18 @@ class MatrixCreationWindow:
 
         demand = FloatDPApproximationMatrix(demand.tolist(), dp)
         if ret:
-            print(demand)
             return demand
         else:
+            # Handels matrix name error.
             if self.e3.get() == '':
                 self.textArea.printInOutputArea('Error: name missing')
             else:
                 self.matrixMemory.addMatrix(demand, self.e3.get())
 
-
-
-
-
-
-
+    def clearFrame(self):
+        """
+        Clears the frame.
+        """
+        for label in self.newMatrixFrame.grid_slaves():
+            if int(label.grid_info()["column"]) > 0:
+                label.destroy()
