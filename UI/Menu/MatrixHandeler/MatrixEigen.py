@@ -38,20 +38,20 @@ class MatrixEigen:
         try:
             eigenValues, eigenVectors = Householder.findEigenAriadne(self.selectedMatrix)
 
-            eigenValuesList = []
-            eigenVectorList = []
+            self.eigenValuesList = []
+            self.eigenVectorList = []
             print("type eigenValues", type(eigenValues))
             for i in range(len(eigenValues)):
                 eigenVect, eigenVal = IntervalNewtonMethod.intervalNewtonMethods(Householder.getColumn(i, eigenVectors),
                                                                                  eigenValues[i], self.selectedMatrix)
-                eigenValuesList.append(eigenVal)
-                eigenVectorList.append(eigenVect)
-            self.displayFoundEigen(eigenVectorList, eigenValuesList)
+                self.eigenValuesList.append(eigenVal)
+                self.eigenVectorList.append(eigenVect)
+            self.displayFoundEigen()
         except:
             self.textArea.printInOutputArea("Error: No matrix selected")
 
 
-    def displayFoundEigen(self, eigenVectors, eigenValues):
+    def displayFoundEigen(self):
         for label in self.frame.grid_slaves():
             if int(label.grid_info()["column"]) > 0:
                 label.destroy()
@@ -61,20 +61,39 @@ class MatrixEigen:
 
         var = IntVar()
         window = Frame(self.frame)
-        for i in range(len(eigenValues)):
-            text = str(eigenValues[i]) + " : " + str(eigenVectors[i])
+        for i in range(len(self.eigenValuesList)):
+            text = str(self.eigenValuesList[i]) + " : " + str(self.eigenVectorList[i])
             if len(text) > 65:
                 text = text[0:65] + " ..."
             Radiobutton(window, text=text, padx=20, variable=var, value=i).pack(anchor=W)
 
             window.grid(row=3, column=1, rowspan=50, sticky=N + S + E + W)
 
-        buttonCopy = Button(self.frame,  text="copy bound", width=10, padx=5, pady=5)
+        buttonCopy = Button(self.frame,  text="copy bound", width=11, padx=5, pady=5, command=lambda: self.gtc(var.get(), False))
         buttonCopy.grid(row=3, column=2)
-        buttonPrint = Button(self.frame, text="Print bound", width=10, padx=5, pady=5)
+        buttonPrint = Button(self.frame, text="Print bound", width=11, padx=5, pady=5, command=lambda: self.printEstimate(var.get(), False))
         buttonPrint.grid(row=4, column=2)
-        buttonMiddle = Button(self.frame, text="Get mid-point", width=10, padx=5, pady=5)
+        buttonMiddle = Button(self.frame, text="copy mid-point", width=11, padx=5, pady=5, command=lambda: self.gtc(var.get(), True))
         buttonMiddle.grid(row=5, column=2)
+        buttonMiddle = Button(self.frame, text="Print mid-point", width=11, padx=5, pady=5, command=lambda: self.printEstimate(var.get(), True))
+        buttonMiddle.grid(row=6, column=2)
+
+    def printEstimate(self, i, midPoint):
+        if midPoint:
+            sentence = repr(cast_exact(self.eigenValuesList[i])) + " : " + repr(cast_exact(self.eigenVectorList[i])) + '\n'
+        else:
+            sentence = repr(self.eigenValuesList[i]) + " : " + repr(self.eigenVectorList[i]) + '\n'
+        self.textArea.printInOutputArea(sentence)
+
+
+    def gtc(self, i, midPoint):
+        self.root.clipboard_clear()
+        if midPoint:
+            selectedEigen = (cast_exact(self.eigenValuesList[i]), cast_exact(self.eigenVectorList[i]))
+        else:
+            selectedEigen = (self.eigenValuesList[i], self.eigenVectorList[i])
+
+        self.root.clipboard_append(selectedEigen)
 
 
     def oneEigenButtonActive(self):
@@ -101,18 +120,21 @@ class MatrixEigen:
             self.textArea.printInOutputArea("Error: No matrix selected")
 
     def getEigenComputed(self):
-        matrix = []
         if self.entry1.get() !='' and self.entry2.get() !='':
             print("hello", self.entry1.get())
             eigenValEstimate = FloatDPApproximation(eval(self.entry1.get()), dp)
             eigenVectEstimate = self.decodeEnteredMatrix(self.entry2.get())
             eigenVect, eigenVal = IntervalNewtonMethod.intervalNewtonMethods(eigenVectEstimate, eigenValEstimate, self.selectedMatrix)
-            self.displayFoundEigen([eigenVect], [eigenVal])
+            self.eigenVectorList = [eigenVect]
+            self.eigenValuesList = [eigenVal]
+            self.displayFoundEigen()
 
         else:
             eigenValEstimate, eigenVectEstimate = EigenVecotrs.power_methods(self.selectedMatrix)
             eigenVect, eigenVal = IntervalNewtonMethod.intervalNewtonMethods(eigenVectEstimate, eigenValEstimate, self.selectedMatrix)
-            self.displayFoundEigen([eigenVect], [eigenVal])
+            self.eigenVectorList = [eigenVect]
+            self.eigenValuesList = [eigenVal]
+            self.displayFoundEigen()
 
 
     def decodeEnteredMatrix(self, matrix):
