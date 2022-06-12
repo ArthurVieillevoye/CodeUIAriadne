@@ -7,7 +7,7 @@ from UI.Menu.MatrixHandeler import MatrixEigen
 
 class MenuWithButton:
     """
-    This class contains all the 'visible' element visible into the left bar.
+    This class contains all the 'visible' element on the left bar.
     It contains the description of the buttons and the link with their corresponding command.
     """
     def __init__(self, root, textArea):
@@ -15,90 +15,68 @@ class MenuWithButton:
         self.textArea = textArea
         self.matrixMemory = MatrixSelection.Matrices(self.root, self.textArea)
 
-    def matrixOperationButtonActive(self):
-        self.textArea.deleteAll()
-        operationWindow = MatrixOperation.MatrixMult(self.root, self.textArea, self.matrixMemory)
-        self.root.grid_slaves()[0].grid_forget()
-        operationWindow.addMultiplicationWindow()
-
-
     def matrixEigenButtonActive(self):
+        """
+        Lead to the matrix eigen computation section.
+        This section allows the user to compute and render the eigenvalues/eigenvectors of its matrices.
+        """
+        # Clear the text output Area
         self.textArea.deleteAll()
+
+        # Create the corresponding object and display it.
         eigenWindow = MatrixEigen.MatrixEigen(self.root, self.textArea, self.matrixMemory)
-        self.root.grid_slaves()[0].grid_forget()
         eigenWindow.addEigenWindow()
 
+    def matrixOperationButtonActive(self):
+        """
+        Lead to the matrix operation section.
+        That section allows the user to do some basic matrix operations with its matrices.
+        """
+        # Clear the text output Area
+        self.textArea.deleteAll()
+
+        # Create the corresponding object and display it.
+        operationWindow = MatrixOperation.MatrixMult(self.root, self.textArea, self.matrixMemory)
+        operationWindow.addMultiplicationWindow()
 
     def myMatricesButtonActive(self):
+        """
+        Leads to the matrix memory section.
+        That section allows the user to see, modify, copy and delete the matrix he created.
+        """
+        # Clear the text output Area
         self.textArea.deleteAll()
+
+        # Display the matrix memory frame.
         self.root.grid_slaves()[0].grid_forget()
         self.matrixMemory.seeMatrices()
 
-    # def runButtonActive(self):
-    #     path ="C:/Users/Arthur Vieillevoye/Documents/university/Current Class/Thesis/Code/UI/RunTest.py"
-
-        # nPath = path.replace(' ', '\\ ')
-        # exec(open(path).read())
-
-    def bMatrixFromFile(self):
-        """
-        Call the matrixCreation object.
-        Allow the user choose an excel file containing a matrix.
-        """
-        m = MatrixCreation.MatrixCreationWindow(self.newMatrixFrame,self.textArea, matrixMemory=self.matrixMemory)
-        m.getMatrixFromFile()
-
-    def bMatrixEnter(self):
-        """
-        This methods creates the window on which the user can enter the size of the matrix he wants to enter.
-        """
-        m = MatrixCreation.MatrixCreationWindow(self.newMatrixFrame, textArea=self.textArea, matrixMemory=self.matrixMemory)
-        m.addMatrixWindow()
-
-    def bMatrixWrite(self):
-        # self.buttonEnter.grid_remove()
-        # self.buttonWrite.grid_remove()
-        # self.buttonMatrixFromFile.grid_remove()
-        m = MatrixCreation.MatrixCreationWindow(self.newMatrixFrame, textArea=self.textArea, matrixMemory=self.matrixMemory)
-        m.addMatrixTextWindow()
-
-
     def newMatrixButtonAction(self):
         """
-        Create the window that allows the user to choose how he wants to enter his/her matrix.
+        Leads to the matrix creation section.
+        That sectioallows the user to properly entered its matrix.
         """
-        self.root.grid_slaves()[0].grid_forget()
+        # Clear the text output Area
         self.textArea.deleteAll()
 
-        self.newMatrixFrame = Frame(self.root)
-        # self.newWindow.geometry("200x200")
-        self.buttonEnter = Button(self.newMatrixFrame, text="Enter Matrix", padx=5, pady=5,
-                                  command=self.bMatrixEnter)
-        self.buttonEnter.grid(row=0, column=0, sticky="new")
-
-        self.buttonWrite = Button(self.newMatrixFrame, text="Write Matrix", padx=5, pady=5,
-                                  command=self.bMatrixWrite)
-        self.buttonWrite.grid(row=1, column=0, sticky="new")
-
-        self.buttonMatrixFromFile = Button(self.newMatrixFrame, text="Upload Matrix", padx=5, pady=5,
-                                           command=self.bMatrixFromFile)
-        self.buttonMatrixFromFile.grid(row=2, column=0, sticky="new")
-
-        self.newMatrixFrame.grid(row=0, column=1, sticky=N + S + E + W)
+        # Create the corresponding object and display it.
+        m = MatrixCreation.MatrixCreationWindow(self.root, textArea=self.textArea,
+                                                matrixMemory=self.matrixMemory)
+        m.addMatrixCreationOptions()
 
     def addButtonMenu(self):
         """
-        Add all the neccessary buttons on the left side of the main window.
+        Add all the buttons on the left side of the main window and link them to the corresponding command.
         """
+        # Create the frame
         frame = Frame(self.root)
+
+        # Add the different buttons
         buttonNewMatrix = Button(frame, text="New Matrix", padx=5, pady=5, width=16, command=self.newMatrixButtonAction)
         buttonNewMatrix.grid(row=0, column=0, padx=5, pady=5)
 
         buttonMyMatrix = Button(frame, text="My Matrices", padx=5, pady=5, width=10, command=self.myMatricesButtonActive)
         buttonMyMatrix.grid(row=1, column=0, sticky="new", padx=5, pady=5)
-
-        # buttonRun = Button(frame, text="Run", padx=25, pady=5, width=10, command=self.runButtonActive)
-        # buttonRun.grid(row=2, column=0, sticky="new", padx=5, pady=5)
 
         buttonAddMatrix = Button(frame, text="Matrix Operation", padx=5, pady=5, width=10, command=self.matrixOperationButtonActive)
         buttonAddMatrix.grid(row=2, column=0, sticky="new", padx=5, pady=5)
