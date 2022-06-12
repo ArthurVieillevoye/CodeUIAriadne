@@ -136,8 +136,11 @@ class MatrixMult:
         self.printOnTextArea(self.text)
 
     def equal(self):
-        answer = eval(self.evaluate(), self.dic)
-        self.textArea.printInOutputArea(str(answer))
+        try:
+            answer = eval(self.evaluate(), self.dic)
+            self.textArea.printInOutputArea(str(answer))
+        except:
+            self.textArea.printInOutputArea("Error: The calculation is not correct")
 
     def evaluate(self):
         generalText = ''
@@ -161,8 +164,6 @@ class MatrixMult:
                     print('hello', self.operands[i])
                     generalText = generalText + self.operands[i]
                     i += 1
-            print(i)
-            print(generalText)
         return generalText
 
 
