@@ -5,6 +5,9 @@ from EigenComputation import Householder
 from pyariadne import *
 
 class MatrixMult:
+    """
+    This class allow the user tor perform basic matrix operation.
+    """
     def __init__(self, root, textArea, matrixMemory):
         self.root = root
         self.operands = []
@@ -19,17 +22,19 @@ class MatrixMult:
         label = Label(self.frame, text="Select Matrix")
         label.grid(row=0, column=0, columnspan=2)
 
-        var = IntVar()
+        # Add the matrixes into the comboboxes.
         self.options = self.getListOfMatrices()
         # print(type(self.options))
         self.comboBox = ttk.Combobox(self.frame, value=self.options)
         self.comboBox.bind("<<ComboboxSelected>>", self.matrixSelected)
         self.comboBox.grid(row=1, column=0, columnspan=2)
 
+        # This entry displays the formulae that the user is entering.
         self.functionEntry = Entry(self.frame, width=50)
         self.functionEntry.grid(row=2, column=0, columnspan=2)
         self.functionEntry.config(state='disabled')
 
+        # Add all the buttons that allow the user to perform the calculations.
         buttonFrame = Frame(self.frame)
 
         transposeButton = Button(buttonFrame, text='Transpose', width=10, padx=5, pady=5, command=self.transpose)
@@ -44,15 +49,20 @@ class MatrixMult:
         multButton = Button(buttonFrame, text='*', width=10, padx=5, pady=5, command=self.multiplication)
         multButton.grid(row=3, column=3)
 
-        # buttonWrite = Button(buttonFrame, text="Eigen", width=10, padx=5, pady=5, command=lambda: self.printEigen(var.get()))
-        # buttonWrite.grid(row=4, column=3)
-
         eqButton = Button(buttonFrame, text='=', width=10, padx=5, pady=5, command=self.equal)
         eqButton.grid(row=4, column=1)
-        buttonComa = Button(buttonFrame, text="(", width=10, padx=5, pady=5, command=lambda: self.numberEntered('('))
-        buttonComa.grid(row=4, column=0)
-        buttonComa = Button(buttonFrame, text=")", width=10, padx=5, pady=5, command=lambda: self.numberEntered(')'))
-        buttonComa.grid(row=4, column=2)
+
+        buttonOpenBrackets = Button(buttonFrame, text="(", width=10, padx=5, pady=5, command=lambda: self.numberEntered('('))
+        buttonOpenBrackets.grid(row=4, column=0)
+
+        buttonCloseBrackets = Button(buttonFrame, text=")", width=10, padx=5, pady=5, command=lambda: self.numberEntered(')'))
+        buttonCloseBrackets.grid(row=4, column=2)
+
+        buttonComa = Button(buttonFrame, text=".", width=10, padx=5, pady=5, command=lambda: self.numberEntered('.'))
+        buttonComa.grid(row=3, column=0)
+
+        buttonClear = Button(buttonFrame, text="Clear", width=10, padx=5, pady=5, command=self.clearEquation)
+        buttonClear.grid(row=3, column=2)
 
         button1 = Button(buttonFrame, text='1', width=10, padx=5, pady=5, command=lambda: self.numberEntered(1))
         button1.grid(row=0, column=0)
@@ -74,14 +84,64 @@ class MatrixMult:
         button9.grid(row=2, column=2)
         button0 = Button(buttonFrame, text='0', width=10, padx=5, pady=5, command=lambda: self.numberEntered(0))
         button0.grid(row=3, column=1)
-        buttonComa = Button(buttonFrame, text=".", width=10, padx=5, pady=5, command=lambda: self.numberEntered('.'))
-        buttonComa.grid(row=3, column=0)
-        buttonClear = Button(buttonFrame, text="Clear", width=10, padx=5, pady=5, command= self.clearEquation)
-        buttonClear.grid(row=3, column=2)
 
         buttonFrame.grid(row=3, column=0)
 
         self.frame.grid(row=0, column=1, sticky=N + S + E + W)
+
+    def createOperationDictionary(self):
+        """
+        Create a dictionnary for the operations.
+        :return: matrixName: the name of the matrix.
+        :return: dictionnary: Dictionary containing all the added command for 'eval' to work.
+        """
+        a = self.matrixMemory.getMatrices()
+        b = []
+        for i in a:
+            b.append((i[1], i[0]))
+        dictionary = dict(b)    # Dict containing the name of the matrices.
+        matrixName = dictionary.keys()
+        operationsCommand = {'transpose': transpose, 'inverse': inverse}
+        # Add the operations to the dictionnaire.
+        dictionary.update(operationsCommand)
+        return matrixName, dictionary
+
+    def getListOfMatrices(self):
+        """
+        :return: list of matrix containing in the correct form for display.
+        """
+        self.allMyMmatrices = self.matrixMemory.getMatrices()
+        matrixList = []
+
+        for i in range(len(self.allMyMmatrices)):
+            text = self.allMyMmatrices[i][1] + ': (' + str(self.allMyMmatrices[i][0].column_size()) + ' ' \
+                   + str(self.allMyMmatrices[i][0].row_size()) + ')'
+            matrixList.append((text))
+        return matrixList
+
+    def printOnTextArea(self, textToPrint):
+        """
+        Print to the formulae entry.
+        :param textToPrint: The formulae that needs to be entered.
+        """
+        self.functionEntry.config(state="normal")
+        self.functionEntry.delete(0, END)
+        self.functionEntry.insert(END, textToPrint)
+        self.functionEntry.config(state='disabled')
+
+    def matrixSelected(self, event):
+        """
+        Save the selected matrix.
+        """
+        self.text = self.text + self.allMyMmatrices[self.options.index(self.comboBox.get())][1]
+        self.operands.append(self.allMyMmatrices[self.options.index(self.comboBox.get())][1])
+        self.selectedMatrix = self.allMyMmatrices[self.options.index(self.comboBox.get())][0]
+        self.textArea.addMatrixDisplay(self.frame, text=str(self.selectedMatrix))
+        self.printOnTextArea(self.text)
+
+######################################################
+# ACTION CORRESPONDING TO THE CALCULATOR'S BUTTON
+######################################################
 
     def clearEquation(self):
         self.text = ''
@@ -91,29 +151,10 @@ class MatrixMult:
     def numberEntered(self, nmb):
         self.text = self.text + str(nmb)
         self.operands.append(str(nmb))
-        # self.number = self.number + str(nmb)
-        # self.selectedMatrix = np.transpose(self.selectedMatrix)
-        self.printOnTextArea(self.text)
-
-    # def endOfNumber(self):
-    #     if self.number != '':
-
-    def printEigen(self, i):
-        eigen = Householder.findEigen(self.matrices[i][0])
-        sentence = "eigenvalues : " + str(eigen[0]) + '\neigenVectors : ' + str(eigen[1]) + '\n'
-        self.textArea.printInOutputArea(sentence)
-
-    def matrixSelected(self, event):
-        self.text = self.text + self.allMyMmatrices[self.options.index(self.comboBox.get())][1]
-        self.operands.append(self.allMyMmatrices[self.options.index(self.comboBox.get())][1])
-        self.selectedMatrix = self.allMyMmatrices[self.options.index(self.comboBox.get())][0]
-        # print(self.selectedMatrix)
-        self.textArea.addMatrixDisplay(self.frame, text=str(self.selectedMatrix))
         self.printOnTextArea(self.text)
 
     def transpose(self):
         self.text = self.text + 'Transpose('
-        # self.selectedMatrix = np.transpose(self.selectedMatrix)
         self.operands.append('transpose')
         self.operands.append('(')
         self.printOnTextArea(self.text)
@@ -122,7 +163,6 @@ class MatrixMult:
         self.text = self.text + 'Inverse('
         self.operands.append('inverse')
         self.operands.append('(')
-        # self.selectedMatrix = np.linalg.inv(self.selectedMatrix)
         self.printOnTextArea(self.text)
 
     def addition(self):
@@ -143,9 +183,12 @@ class MatrixMult:
             self.textArea.printInOutputArea("Error: The calculation is not correct")
 
     def evaluate(self):
+        """
+        This method transform the entered function into an evaluable string.
+        :return:
+        """
         generalText = ''
         numberID = 0
-        print(len(self.operands))
         i = 0
         while i < len(self.operands):
             if i + 2 < len(self.operands):
@@ -154,43 +197,12 @@ class MatrixMult:
                     name = 'index' + str(numberID)
                     generalText = generalText + name
                     self.dic[name] = np.dot(self.dic.get(self.operands[i]), self.dic.get(self.operands[i + 2]))
-                    # print(dic[text])
                     numberID += 1
                     i += 3
             if i < len(self.operands):
                 if self.operands[i] == "+" or self.operands[i] == "*" or self.operands[i] in self.matrixNamesList \
                         or self.operands[i] == "." or self.operands[i].isdigit()  or self.operands[i] == "(" \
                         or self.operands[i] == ")" or self.operands[i] == "transpose" or self.operands[i] == "inverse":
-                    print('hello', self.operands[i])
                     generalText = generalText + self.operands[i]
                     i += 1
         return generalText
-
-
-    def getListOfMatrices(self):
-        self.allMyMmatrices = self.matrixMemory.getMatrices()
-        matrixList = []
-
-        for i in range(len(self.allMyMmatrices)):
-            text = self.allMyMmatrices[i][1] + ': (' + str(self.allMyMmatrices[i][0].column_size()) + ' ' \
-                   + str(self.allMyMmatrices[i][0].row_size()) + ')'
-            matrixList.append((text))
-        return matrixList
-
-    def createOperationDictionary(self):
-        a = self.matrixMemory.getMatrices()
-        b = []
-        for i in a:
-            b.append((i[1], i[0]))
-        dictionary = dict(b)
-        matrixName = dictionary.keys()
-        print(type(dictionary))
-        operationsCommand = {'transpose': transpose, 'inverse': inverse}
-        dictionary.update(operationsCommand)
-        return matrixName, dictionary
-
-    def printOnTextArea(self, textToPrint):
-        self.functionEntry.config(state="normal")
-        self.functionEntry.delete(0,END)
-        self.functionEntry.insert(END, textToPrint)
-        self.functionEntry.config(state='disabled')
