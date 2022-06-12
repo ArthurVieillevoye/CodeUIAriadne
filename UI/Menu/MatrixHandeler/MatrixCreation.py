@@ -25,23 +25,163 @@ class MatrixCreationWindow:
         self.textArea = textArea
         self.matrixMemory = matrixMemory
 
-    def clearFrame(self):
-        for label in self.newMatrixFrame.grid_slaves():
-            if int(label.grid_info()["column"]) > 0:
-                label.destroy()
+    def addMatrixCreationOptions(self):
+        """
+        Create the window that allows the user to choose how he wants to enter his/her matrix.
+        """
+        # Clean the frame.
+        self.root.grid_slaves()[0].grid_forget()
+        self.textArea.deleteAll()
+
+        self.newMatrixFrame = Frame(self.root)
+
+        # Add the buttons for the different creation options.
+        self.buttonEnter = Button(self.newMatrixFrame, text="Enter Matrix", padx=5, pady=5,
+                                  command=self.addMatrixWindow)
+        self.buttonEnter.grid(row=0, column=0, sticky="new")
+
+        self.buttonWrite = Button(self.newMatrixFrame, text="Write Matrix", padx=5, pady=5,
+                                  command=self.addMatrixTextWindow)
+        self.buttonWrite.grid(row=1, column=0, sticky="new")
+
+        self.buttonMatrixFromFile = Button(self.newMatrixFrame, text="Upload Matrix", padx=5, pady=5,
+                                           command=self.getMatrixFromFile)
+        self.buttonMatrixFromFile.grid(row=2, column=0, sticky="new")
+
+        self.newMatrixFrame.grid(row=0, column=1, sticky=N + S + E + W)
+
+###################################################################
+#   SECTION UPLOAD FILE
+###################################################################
+
+    def getMatrixFromFile(self):
+        """
+        This method is used if the user wants to open a .xcel file containing a matrix.
+        Read this file and return the matrix contained into the .xcel file.s
+        """
+        self.clearFrame()
+
+        # Ask to the user the file locatn and return the path to the file.
+        open_file_loc = filedialog.askopenfilename()
+        if open_file_loc != '' or open_file_loc != '()':
+            try:
+                # Cast the matrix from excel file to the Ariadne matrices.
+                df = pd.read_excel(open_file_loc, header=None)
+                myMatrix = FloatDPApproximationMatrix(df.values.tolist(), dp)
+                self.nameWindowForUploadedMatrices(myMatrix)
+            except:
+                try:
+                    # Casst the matrix from csv file to the Ariadne matrix.
+                    df = pd.read_csv(open_file_loc, header=None, sep=';')
+                    myMatrix = FloatDPApproximationMatrix(df.values.tolist(), dp)
+                    self.nameWindowForUploadedMatrices(myMatrix)
+                except:
+                    # If the user entered a wrong file type.
+                    self.textArea.printInOutputArea("Error: File is not in the correct format (.csv or .xcel)")
+
+    def nameWindowForUploadedMatrices(self, myMatrix):
+        """
+        Ask the user for the name of the matrix that he xants to create.
+        :param myMatrix: Tha Ariadne matrix extracted from the file.
+        """
+        # Ask the label and entries to allow the user to enter the name.
+        label = Label(self.newMatrixFrame, text="Name of the matrix:")
+        label.grid(row=0, column=1)
+        e = Entry(self.newMatrixFrame, width=30, borderwidth=5)
+        e.grid(row=1, column=1)
+
+        button = Button(self.newMatrixFrame, text='Get Data', command=lambda: self.verifyName(myMatrix, e.get()))
+        button.grid(row=2, column=1)
+
+    def verifyName(self, myMatrix, e):
+        """
+        Verify the correctness of the entered name.
+        :param myMatrix: The Ariadne matrix
+        :param e: the name of the matrix
+        """
+        if e == '':
+            # If the name is a empty string, throw an error.
+            self.textArea.printInOutputArea('Error: name missing')
+        else:
+            # If the name is correct, save the matrix.
+            self.matrixMemory.addMatrix(myMatrix, e)
+
+    ###################################################################
+    #   SECTION ENTER MATRIX AS TEXT
+    ###################################################################
+
+    def addMatrixTextWindow(self):
+        """
+        This method is used to allow the user enter its matrix into a python or matlab form.
+        """
+        self.clearFrame()
+
+        # Enter the labels and the entry that will allow the user to enter its matrix.
+        label1 = Label(self.newMatrixFrame, text='Enter your matrix in python or matlab form')
+        label1.grid(row=0, column=1, columnspan=2)
+
+        label2 = Label(self.newMatrixFrame, text='Matrix: ')
+        label2.grid(row=1, column=1)
+        matrixEntry = Entry(self.newMatrixFrame, width=100)
+        matrixEntry.grid(row=1, column=2)
+
+        label = Label(self.newMatrixFrame, text="Name of the matrix:")
+        label.grid(row=2, column=1)
+        entryName = Entry(self.newMatrixFrame, width=50)
+        entryName.grid(row=2, column=2, sticky=W)
+
+        button = Button(self.newMatrixFrame, text='save Matrix', padx=5, pady=5,
+                        command=lambda: self.decodeEnteredMatrix(matrixEntry.get(), entryName.get()))
+        button.grid(row=3, column=1)
+
+    def decodeEnteredMatrix(self, matrix, name):
+        """
+        Decode the entered matrix to save it.
+        Throw an error if the matrix is not in the two correct form.
+        :param matrix: The entered matrix in a string format
+        :param name: The name of the matrix that the user entered.
+        """
+        if name == '':
+            # Throw an error if the user did not entered a name.
+            self.textArea.printInOutputArea('Error: name missing')
+        else:
+            try:
+                # If the user enters its matrix in python form
+                self.matrixMemory.addMatrix(FloatDPApproximationMatrix(eval(matrix), dp), name)
+            except:
+                try:
+                    # If the user enters its matrix in matlab form.
+                    myMatrix = []
+                    matrix = matrix.replace("[", "")
+                    matrix = matrix.replace("]", "")
+                    matrix = matrix.replace(" ", "")
+
+                    matrix = matrix.split(';')
+                    for el in matrix:
+                        listTmp = '[' + el + ']'
+                        myMatrix.append(eval(listTmp))
+                    print(myMatrix)
+                    self.matrixMemory.addMatrix(FloatDPApproximationMatrix(myMatrix, dp), name)
+                except:
+                    # Throw an error if the matrix has not been entered in a good format.
+                    self.textArea.printInOutputArea('You did not enter the matrix in a correct form')
+
+###################################################################
+#   SECTION UPLOAD FILE
+###################################################################
+
+
+
+
 
     def addMatrixWindow(self):
         """
         Create a new window for the user to enter the matrix of its choice.
+        Here, the user enters the matrix by filling it a grid.
         """
-
         self.clearFrame()
 
-        # self.buttonWrite.grid_remove()
-        # self.buttonMatrixFromFile.grid_remove()
-
         # Creates the labels and the entry boxes for the row and column numbers.
-
         label1 = Label(self.newMatrixFrame, text="row")
         label1.grid(row=0, column=1)
         self.e1 = Entry(self.newMatrixFrame, width=10, borderwidth=5)
@@ -57,11 +197,15 @@ class MatrixCreationWindow:
         self.e3 = Entry(self.newMatrixFrame, width=10, borderwidth=5)
         self.e3.grid(row=2, column=2)
 
-        # self.e1.bind_all('<Return>', lambda event: self.updateMatrixWindow)
-        # self.e2.bind_all('<Return>', lambda event: self.updateMatrixWindow)
-
         buttonCreateMatrix = Button(self.newMatrixFrame, text="Enter Size", padx=5, pady=5, command=self.getRowAndColumnSize)
         buttonCreateMatrix.grid(row=0, column=3, sticky="ew")
+
+    def clearFrame(self):
+        for label in self.newMatrixFrame.grid_slaves():
+            if int(label.grid_info()["column"]) > 0:
+                label.destroy()
+
+
 
     def getRowAndColumnSize(self):
         # Enter the column numbers.
@@ -177,137 +321,9 @@ class MatrixCreationWindow:
             else:
                 self.matrixMemory.addMatrix(demand, self.e3.get())
 
-    def addMatrixTextWindow(self):
-        self.clearFrame()
-
-        label1 = Label(self.newMatrixFrame, text='Enter your matrix in python or matlab form')
-        label1.grid(row=0, column=1, columnspan=2)
-
-        label2 = Label(self.newMatrixFrame, text='Matrix: ')
-        label2.grid(row=1, column=1)
-        matrixEntry = Entry(self.newMatrixFrame, width=100)
-        matrixEntry.grid(row=1, column=2)
-
-        label = Label(self.newMatrixFrame, text="Name of the matrix:")
-        label.grid(row=2, column=1)
-        entryName = Entry(self.newMatrixFrame, width=50)
-        entryName.grid(row=2, column=2, sticky=W)
-
-        button = Button(self.newMatrixFrame, text='save Matrix', padx=5, pady=5,
-                        command=lambda: self.decodeEnteredMatrix(matrixEntry.get(), entryName.get()))
-        button.grid(row=3, column=1)
-
-    def decodeEnteredMatrix(self, matrix, name):
-        if name == '':
-            self.textArea.printInOutputArea('Error: name missing')
-        else:
-            passed = True
-            try:
-                self.matrixMemory.addMatrix(FloatDPApproximationMatrix(eval(matrix), dp), name)
-            except:
-                passed = False
-            try:
-                if not passed:
-                    passed = True
-                    myMatrix = []
-                    matrix = matrix.replace("[", "")
-                    matrix = matrix.replace("]", "")
-                    matrix = matrix.replace(" ", "")
-
-                    matrix = matrix.split(';')
-                    for el in matrix:
-                        listTmp = '[' + el + ']'
-                        myMatrix.append(eval(listTmp))
-                    print(myMatrix)
-                    self.matrixMemory.addMatrix(FloatDPApproximationMatrix(myMatrix, dp), name)
-            except:
-                passed = False
-
-            if not passed:
-                self.textArea.printInOutputArea('You did not enter the matrix in a correct form')
-
-    def getMatrixFromFile(self):
-        """
-        This method is used if the user wants to open a .xcel file containing a matrix.
-        Read this file and return the matrix contained into the .xcel file.s
-        """
-        self.clearFrame()
-        
-        open_file_loc = filedialog.askopenfilename()
-        if open_file_loc != '' or open_file_loc != '()':
-            print(open_file_loc)
-            try:
-                df = pd.read_excel(open_file_loc, header=None)
-                myMatrix = FloatDPApproximationMatrix(df.values.tolist(), dp)
-                self.nameWindowForUploadedMatrices(myMatrix)
-            except:
-                try:
-                    df = pd.read_csv(open_file_loc, header=None, sep=';')
-                    myMatrix = FloatDPApproximationMatrix(df.values.tolist(), dp)
-                    self.nameWindowForUploadedMatrices(myMatrix)
-                except:
-                    self.textArea.printInOutputArea("Error: File is not in the correct format (.csv or .xcel)")
-
-    def nameWindowForUploadedMatrices(self, myMatrix):
-        label = Label(self.newMatrixFrame, text="Name of the matrix:")
-        label.grid(row=0, column=1)
-        e = Entry(self.newMatrixFrame, width=30, borderwidth=5)
-        e.grid(row=1, column=1)
-
-        button = Button(self.newMatrixFrame, text='Get Data', command=lambda: self.verifyName(myMatrix, e.get()))
-        button.grid(row=2, column=1)
-
-    def verifyName(self, myMatrix, e):
-        if e == '':
-            self.textArea.printInOutputArea('Error: name missing')
-        else:
-            self.matrixMemory.addMatrix(myMatrix, e)
 
 
 
 
-    # def bMatrixFromFile(self):
-    #     """
-    #     Call the matrixCreation object.
-    #     Allow the user choose an excel file containing a matrix.
-    #     """
-    #     m = MatrixCreation.MatrixCreationWindow(self.newMatrixFrame,self.textArea, matrixMemory=self.matrixMemory)
-    #     m.getMatrixFromFile()
-    #
-    # def bMatrixEnter(self):
-    #     """
-    #     This methods creates the window on which the user can enter the size of the matrix he wants to enter.
-    #     """
-    #     m = MatrixCreation.MatrixCreationWindow(self.newMatrixFrame, textArea=self.textArea, matrixMemory=self.matrixMemory)
-    #     m.addMatrixWindow()
-    #
-    # def bMatrixWrite(self):
-    #     # self.buttonEnter.grid_remove()
-    #     # self.buttonWrite.grid_remove()
-    #     # self.buttonMatrixFromFile.grid_remove()
-    #     m = MatrixCreation.MatrixCreationWindow(self.newMatrixFrame, textArea=self.textArea, matrixMemory=self.matrixMemory)
-    #     m.addMatrixTextWindow()
 
 
-    def addMatrixCreationOptions(self):
-        """
-        Create the window that allows the user to choose how he wants to enter his/her matrix.
-        """
-        self.root.grid_slaves()[0].grid_forget()
-        self.textArea.deleteAll()
-
-        self.newMatrixFrame = Frame(self.root)
-        # self.newWindow.geometry("200x200")
-        self.buttonEnter = Button(self.newMatrixFrame, text="Enter Matrix", padx=5, pady=5,
-                                  command=self.addMatrixWindow)
-        self.buttonEnter.grid(row=0, column=0, sticky="new")
-
-        self.buttonWrite = Button(self.newMatrixFrame, text="Write Matrix", padx=5, pady=5,
-                                  command=self.addMatrixTextWindow)
-        self.buttonWrite.grid(row=1, column=0, sticky="new")
-
-        self.buttonMatrixFromFile = Button(self.newMatrixFrame, text="Upload Matrix", padx=5, pady=5,
-                                           command=self.getMatrixFromFile)
-        self.buttonMatrixFromFile.grid(row=2, column=0, sticky="new")
-
-        self.newMatrixFrame.grid(row=0, column=1, sticky=N + S + E + W)

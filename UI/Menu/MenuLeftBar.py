@@ -15,6 +15,27 @@ class MenuWithButton:
         self.textArea = textArea
         self.matrixMemory = MatrixSelection.Matrices(self.root, self.textArea)
 
+    def addButtonMenu(self):
+        """
+        Add all the buttons on the left side of the main window and link them to the corresponding command.
+        """
+        # Create the frame
+        frame = Frame(self.root)
+
+        # Add the different buttons
+        buttonNewMatrix = Button(frame, text="New Matrix", padx=5, pady=5, width=16, command=self.newMatrixButtonAction)
+        buttonNewMatrix.grid(row=0, column=0, padx=5, pady=5)
+
+        buttonMyMatrix = Button(frame, text="My Matrices", padx=5, pady=5, width=10, command=self.myMatricesButtonActive)
+        buttonMyMatrix.grid(row=1, column=0, sticky="new", padx=5, pady=5)
+
+        buttonAddMatrix = Button(frame, text="Matrix Operation", padx=5, pady=5, width=10, command=self.matrixOperationButtonActive)
+        buttonAddMatrix.grid(row=2, column=0, sticky="new", padx=5, pady=5)
+
+        buttonAddMatrix = Button(frame, text="Matrix Eigen", padx=5, pady=5, width=10, command=self.matrixEigenButtonActive)
+        buttonAddMatrix.grid(row=3, column=0, sticky="new", padx=5, pady=5)
+        frame.grid(row=0, column=0, sticky="new", padx=5, pady=5)
+
     def matrixEigenButtonActive(self):
         """
         Lead to the matrix eigen computation section.
@@ -63,24 +84,3 @@ class MenuWithButton:
         m = MatrixCreation.MatrixCreationWindow(self.root, textArea=self.textArea,
                                                 matrixMemory=self.matrixMemory)
         m.addMatrixCreationOptions()
-
-    def addButtonMenu(self):
-        """
-        Add all the buttons on the left side of the main window and link them to the corresponding command.
-        """
-        # Create the frame
-        frame = Frame(self.root)
-
-        # Add the different buttons
-        buttonNewMatrix = Button(frame, text="New Matrix", padx=5, pady=5, width=16, command=self.newMatrixButtonAction)
-        buttonNewMatrix.grid(row=0, column=0, padx=5, pady=5)
-
-        buttonMyMatrix = Button(frame, text="My Matrices", padx=5, pady=5, width=10, command=self.myMatricesButtonActive)
-        buttonMyMatrix.grid(row=1, column=0, sticky="new", padx=5, pady=5)
-
-        buttonAddMatrix = Button(frame, text="Matrix Operation", padx=5, pady=5, width=10, command=self.matrixOperationButtonActive)
-        buttonAddMatrix.grid(row=2, column=0, sticky="new", padx=5, pady=5)
-
-        buttonAddMatrix = Button(frame, text="Matrix Eigen", padx=5, pady=5, width=10, command=self.matrixEigenButtonActive)
-        buttonAddMatrix.grid(row=3, column=0, sticky="new", padx=5, pady=5)
-        frame.grid(row=0, column=0, sticky="new", padx=5, pady=5)
