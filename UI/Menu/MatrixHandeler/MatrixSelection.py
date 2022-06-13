@@ -179,7 +179,8 @@ class Matrices:
                 text = entry.get()
                 demand[r, c] = float(text)
 
-        demand = FloatDPApproximationMatrix(demand.tolist(), dp)
+        pr = precision(128)
+        demand = FloatMPApproximationMatrix(demand.tolist(), pr)
         if ret:
             return demand
         else:

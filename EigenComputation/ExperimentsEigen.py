@@ -9,7 +9,8 @@ times = []
 for i in range(1,10):
     a = np.random.rand(i*10,i*10)
     print(i)
-    A = FloatDPApproximationMatrix(a.tolist(), dp)
+    pr = precision(128)
+    A = FloatMPApproximationMatrix(a.tolist(), pr)
     A = A * transpose(A)
     startTime = time.time()
     Householder.findEigenAriadne(A)

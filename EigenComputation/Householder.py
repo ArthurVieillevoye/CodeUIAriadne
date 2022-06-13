@@ -134,7 +134,8 @@ def eigenVal_eigenVect_verification(l, v, A):
 
 
 def euclNormAriadne(A):
-    b = FloatDPApproximation(0, dp)
+    pr = precision(128)
+    b = FloatMPApproximation(0, pr)
     for i in range(len(A)):
         b = b + (A[i] * A[i])
     return sqrt(b)
@@ -143,7 +144,9 @@ def getColumn(column_index, A):
     col = []
     for i in range(A.row_size()):
         col.append(A[i, column_index])
-    return FloatDPApproximationVector(col, dp)
+
+    pr = precision(128)
+    return FloatMPApproximationVector(col, pr)
 
 def copyAriadne(element):
     return eval(repr(element))
@@ -158,7 +161,8 @@ def placeAriadne(m, B):
     :return: Te new matrix containing the B matrix.
     '''
     #TODO: Check that m>size(B)
-    I = FloatDPApproximationMatrix.identity(m, dp)      #The identity matrix mXm
+    pr = precision(128)
+    I = FloatMPApproximationMatrix.identity(m, pr)      #The identity matrix mXm
     o, p = B.row_size(), B.column_size()
     for i in range(m - o, m):
         for j in range(m - o, m):
@@ -169,7 +173,8 @@ def placeAriadne(m, B):
 
 def shrinkMatrixAriadne(matrix):
     m, n = matrix.column_size(), matrix.row_size()
-    answer = FloatDPApproximationMatrix.identity(m-1, dp)
+    pr = precision(128)
+    answer = FloatMPApproximationMatrix.identity(m-1, pr)
     for i in range(1, n):
         for j in range(1, m):
             answer[i-1,j-1] = matrix[i,j]
@@ -188,11 +193,13 @@ def householderDecompositionAriadne(A):
     a = []
     for i in range(A.row_size()):
         a.append(A[i, 0])
-    a = FloatDPApproximationVector(a, dp)
+
+    pr = precision(128)
+    a = FloatMPApproximationVector(a, pr)
 
     norm = euclNormAriadne(a)
 
-    e = FloatDPApproximationVector.unit(len(a),0,dp)
+    e = FloatMPApproximationVector.unit(len(a),0, pr)
     # This u vector will be used to compute the v vector.
     u = a - (norm * e)
 
@@ -208,9 +215,9 @@ def householderDecompositionAriadne(A):
             tmp2.append(v[i] * v[j])
         tmp1.append(tmp2)
 
-    I = FloatDPApproximationMatrix.identity(A.column_size(), dp)
-    vMatrix = FloatDPApproximationMatrix(tmp1, dp)
-    Q = I - (FloatDPApproximation(2, dp) * vMatrix)
+    I = FloatMPApproximationMatrix.identity(A.column_size(), pr)
+    vMatrix = FloatMPApproximationMatrix(tmp1, pr)
+    Q = I - (FloatMPApproximation(2, pr) * vMatrix)
     return Q
 
 
@@ -253,7 +260,8 @@ def getDiagonalElementAriadne(matrix):
     diag = []
     for i in range(matrix.row_size()):
         diag.append(matrix[i,i])
-    return FloatDPApproximationVector(diag, dp)
+    pr = precision(128)
+    return FloatMPApproximationVector(diag, pr)
 
 def findEigenAriadne(A):
     '''
@@ -263,7 +271,8 @@ def findEigenAriadne(A):
     :return: The eigenvectors and eigenvalues of A
     '''
     X = copyAriadne(A)
-    pQ = FloatDPApproximationMatrix.identity(A.row_size(), dp)
+    pr = precision(128)
+    pQ = FloatMPApproximationMatrix.identity(A.row_size(), pr)
 
     # Iterate to converge to the correct eigenvalues and eigenvectors.
     for i in range(50):

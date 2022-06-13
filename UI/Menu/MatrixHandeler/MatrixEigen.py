@@ -113,7 +113,8 @@ class MatrixEigen:
         """
         if self.entry1.get() !='' and self.entry2.get() !='':
             # Compute the closest eigen to the estimate.
-            eigenValEstimate = FloatDPApproximation(eval(self.entry1.get()), dp)
+            pr = precision(128)
+            eigenValEstimate = FloatMPApproximation(eval(self.entry1.get()), pr)
             eigenVectEstimate = self.decodeEnteredMatrix(self.entry2.get())
             eigenVect, eigenVal = IntervalNewtonMethod.intervalNewtonMethods(eigenVectEstimate, eigenValEstimate, self.selectedMatrix)
             self.eigenVectorList = [eigenVect]
@@ -135,7 +136,8 @@ class MatrixEigen:
         :return: the estimated eigenvector into Ariadne form.
         """
         try:
-            return FloatDPApproximationVector(eval(matrix), dp)
+            pr = precision(128)
+            return FloatMPApproximationVector(eval(matrix), pr)
         except:
             self.textArea.printInOutputArea('You did not enter the eigenvector approximation in a correct form')
 

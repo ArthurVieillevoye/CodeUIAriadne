@@ -67,13 +67,15 @@ class MatrixCreationWindow:
             try:
                 # Cast the matrix from excel file to the Ariadne matrices.
                 df = pd.read_excel(open_file_loc, header=None)
-                myMatrix = FloatDPApproximationMatrix(df.values.tolist(), dp)
+                pr = precision(128)
+                myMatrix = FloatMPApproximationMatrix(df.values.tolist(), pr)
                 self.nameWindowForUploadedMatrices(myMatrix)
             except:
                 try:
                     # Casst the matrix from csv file to the Ariadne matrix.
                     df = pd.read_csv(open_file_loc, header=None, sep=';')
-                    myMatrix = FloatDPApproximationMatrix(df.values.tolist(), dp)
+                    pr = precision(128)
+                    myMatrix = FloatMPApproximationMatrix(df.values.tolist(), pr)
                     self.nameWindowForUploadedMatrices(myMatrix)
                 except:
                     # If the user entered a wrong file type.
@@ -147,7 +149,8 @@ class MatrixCreationWindow:
         else:
             try:
                 # If the user enters its matrix in python form
-                self.matrixMemory.addMatrix(FloatDPApproximationMatrix(eval(matrix), dp), name)
+                pr = precision(128)
+                self.matrixMemory.addMatrix(FloatMPApproximationMatrix(eval(matrix), pr), name)
                 self.textArea.printInOutputArea("Matrix \"" + name + "\" saved")
             except:
                 try:
@@ -161,8 +164,8 @@ class MatrixCreationWindow:
                     for el in matrix:
                         listTmp = '[' + el + ']'
                         myMatrix.append(eval(listTmp))
-                    print(myMatrix)
-                    self.matrixMemory.addMatrix(FloatDPApproximationMatrix(myMatrix, dp), name)
+                    pr = precision(128)
+                    self.matrixMemory.addMatrix(FloatMPApproximationMatrix(myMatrix, pr), name)
                     self.textArea.printInOutputArea("Matrix \"" + name + "\" saved")
                 except:
                     # Throw an error if the matrix has not been entered in a good format.
@@ -330,7 +333,8 @@ class MatrixCreationWindow:
                 text = entry.get()
                 demand[r, c] = float(text)
 
-        demand = FloatDPApproximationMatrix(demand.tolist(), dp)
+        pr = precision(128)
+        demand = FloatMPApproximationMatrix(demand.tolist(), pr)
         if ret:
             return demand
         else:

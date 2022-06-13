@@ -7,20 +7,22 @@ def f(A, v, lamb):
     # print(len(c))
     # print(transpose(c))
     # print(type(1 - (transpose(v) * v)))
-    f = join(c, 1 - (transpose(v) * v)/FloatDPBounds(2, dp))
+    pr = precision(128)
+    f = join(c, 1 - (transpose(v) * v)/FloatMPBounds(2, pr))
     return f
 
 
 def df(A, v, lamb):
     n = len(v)
-    I = FloatDPBoundsMatrix.identity(n, dp)
+    pr = precision(128)
+    I = FloatMPBoundsMatrix.identity(n, pr)
     # print(type(A - (lamb * I)))
     # print(type(FloatDPBounds((-1), dp)*v))
     topRow = cojoin(A - (lamb * I), -v)
 
     print(topRow)
 
-    bottomRow = cojoin(transpose(-v), FloatDPBounds(0, dp))
+    bottomRow = cojoin(transpose(-v), FloatMPBounds(0, pr))
     # bottomRow = transpose(bottomRow)
 
     print(type(topRow), '##### ', type(bottomRow))
@@ -31,16 +33,19 @@ def getIFirstElementsInVector(v, i):
     smallerV = []
     for j in range(i):
         smallerV.append(v[j])
-    smallerV= FloatDPBoundsVector(smallerV, dp)
+
+    pr = precision(128)
+    smallerV= FloatMPBoundsVector(smallerV, pr)
     return smallerV
 
 
 def maxLenghtBounds(v):
-    maxRange = FloatDPApproximation(v[0].upper()) - FloatDPApproximation(v[0].lower())
+    # pr = precision(128)
+    maxRange = FloatMPApproximation(v[0].upper()) - FloatMPApproximation(v[0].lower())
     for i in range (1, len(v)):
         print(v[0].upper() - v[0].lower())
         if cast_exact(v[0].upper() - v[0].lower()) > cast_exact(maxRange):
-            maxRange = FloatDPApproximation(v[i].upper()) - FloatDPApproximation(v[i].lower())
+            maxRange = FloatMPApproximation(v[i].upper()) - FloatMPApproximation(v[i].lower())
 
     return maxRange
 
@@ -49,10 +54,11 @@ def intervalNewtonMethods(v,lamb, A):
     print("A*v", A * cast_exact(v))
     print("lamb*v", lamb * v)
 
-    eps = FloatDPValue(Dyadic(1, 10), dp)
-    v = cast_exact(v) + FloatDPBoundsVector(len(v), FloatDPBounds(-eps, +eps, dp))
-    lamb = cast_exact(lamb) + FloatDPBounds(-eps, +eps, dp)
-    A = cast_exact(A) + FloatDPBoundsMatrix(A.column_size(), A.row_size(), FloatDPBounds(-eps, +eps, dp))
+    pr = precision(128)
+    eps = FloatMPValue(Dyadic(1, 10), pr)
+    v = cast_exact(v) + FloatMPBoundsVector(len(v), FloatMPBounds(-eps, +eps, pr))
+    lamb = cast_exact(lamb) + FloatMPBounds(-eps, +eps, pr)
+    A = cast_exact(A) + FloatMPBoundsMatrix(A.column_size(), A.row_size(), FloatMPBounds(-eps, +eps, pr))
 
     print("types", type(v), type(lamb), type(A))
     # print("A*v", A * cast_exact(v))
@@ -68,8 +74,8 @@ def intervalNewtonMethods(v,lamb, A):
     for i in range(5):
 
         dfx = df(A, v, lamb)
-        fx = f(A, FloatDPBoundsVector(cast_exact(v)), FloatDPBounds(cast_exact(lamb)))
-        fx = fx + FloatDPBoundsVector(len(fx), FloatDPBounds(-0, +0, dp))
+        fx = f(A, FloatMPBoundsVector(cast_exact(v)), FloatMPBounds(cast_exact(lamb)))
+        fx = fx + FloatMPBoundsVector(len(fx), FloatMPBounds(-0, +0, pr))
         # print(df.column_size(), ' ++++++', df.row_size())
         print(len(fx))
 
@@ -111,7 +117,8 @@ def intervalNewtonMethods(v,lamb, A):
     return v, lamb
 
 if __name__ == '__main__':
-    A = FloatDPBoundsMatrix([[2,-1,1],[-1,3,2],[1,2,3]], dp)
+    pr = precision(128)
+    A = FloatMPBoundsMatrix([[2,-1,1],[-1,3,2],[1,2,3]], pr)
     # A = FloatDPApproximationMatrix([[12,-51,4], [6,167,-68], [-4,24,-41]], dp)
     eigenval, eigenvect = Householder.findEigenAriadne(A)
 

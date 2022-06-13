@@ -30,7 +30,7 @@ class MatrixMult:
         self.comboBox.grid(row=1, column=0, columnspan=2)
 
         # This entry displays the formulae that the user is entering.
-        self.functionEntry = Entry(self.frame, width=50)
+        self.functionEntry = Entry(self.frame, width=50, disabledforeground='black')
         self.functionEntry.grid(row=2, column=0, columnspan=2)
         self.functionEntry.config(state='disabled')
 
@@ -179,7 +179,9 @@ class MatrixMult:
         try:
             answer = eval(self.evaluate(), self.dic)
             self.textArea.printInOutputArea(str(answer))
+            self.clearEquation()
         except:
+            self.clearEquation()
             self.textArea.printInOutputArea("Error: The calculation is not correct")
 
     def evaluate(self):

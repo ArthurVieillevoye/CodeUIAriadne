@@ -4,7 +4,8 @@ def power_methods(A):
     x1 = [1]
     for i in range(A.column_size()-1):
         x1.append(1)
-    x1 = FloatDPApproximationVector(x1, dp)
+    pr = precision(128)
+    x1 = FloatMPApproximationVector(x1, pr)
     # x1 = np.array([np.ones(len(A))]).T
     # print("hello",x1)
 
