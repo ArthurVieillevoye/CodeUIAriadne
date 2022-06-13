@@ -184,6 +184,7 @@ class Matrices:
             return demand
         else:
             self.addMatrix(demand, selectedMatrix[1])
+            self.textArea.printInOutputArea("Modification in matrix \""+ selectedMatrix[1] + "\" saved")
 
     def radioButtonSelected(self, i):
         """

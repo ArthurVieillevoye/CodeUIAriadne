@@ -148,6 +148,7 @@ class MatrixCreationWindow:
             try:
                 # If the user enters its matrix in python form
                 self.matrixMemory.addMatrix(FloatDPApproximationMatrix(eval(matrix), dp), name)
+                self.textArea.printInOutputArea("Matrix \"" + name + "\" saved")
             except:
                 try:
                     # If the user enters its matrix in matlab form.
@@ -162,6 +163,7 @@ class MatrixCreationWindow:
                         myMatrix.append(eval(listTmp))
                     print(myMatrix)
                     self.matrixMemory.addMatrix(FloatDPApproximationMatrix(myMatrix, dp), name)
+                    self.textArea.printInOutputArea("Matrix \"" + name + "\" saved")
                 except:
                     # Throw an error if the matrix has not been entered in a good format.
                     self.textArea.printInOutputArea('You did not enter the matrix in a correct form')
@@ -337,6 +339,7 @@ class MatrixCreationWindow:
                 self.textArea.printInOutputArea('Error: name missing')
             else:
                 self.matrixMemory.addMatrix(demand, self.e3.get())
+                self.textArea.printInOutputArea("Matrix \"" + self.e3.get() + "\" saved")
 
     def clearFrame(self):
         """
