@@ -243,7 +243,7 @@ def DecompositionQRAriadne(A):
     for i in range(2, len(Q)):
         QTot = QTot * Q[i]
 
-    print("hello", type(QTot))
+    # print("hello", type(QTot))
     # Compute the R matrix
     R = transpose(QTot) * A
     # R = np.round(R, 10)
