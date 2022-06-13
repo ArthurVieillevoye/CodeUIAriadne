@@ -16,7 +16,9 @@ class MatrixCreationWindow:
         self.entries = []
         self.row = 0
         self.col = 0
-        self.root = root
+        root.grid_slaves()[0].grid_forget()
+        self.root = Frame(root)
+        self.root.grid(row=0, column=1, sticky=N + S + E + W)
         self.matrix = []
         self.histrow = 0
         self.histcol = 0
@@ -30,7 +32,7 @@ class MatrixCreationWindow:
         Create the window that allows the user to choose how he wants to enter his/her matrix.
         """
         # Clean the frame.
-        self.root.grid_slaves()[0].grid_forget()
+        # self.root.grid_slaves()[0].grid_forget()
         self.textArea.deleteAll()
 
         self.newMatrixFrame = Frame(self.root)
@@ -225,6 +227,8 @@ class MatrixCreationWindow:
         for label in self.newMatrixFrame.grid_slaves():
             if int(label.grid_info()["column"]) > 3:
                 label.destroy()
+            elif int(label.grid_info()["row"]) > 2:
+                label.destroy()
 
         # Show the column numbers
         for c in range(self.col):
@@ -262,6 +266,17 @@ class MatrixCreationWindow:
         addRowButton.grid(row=self.row, column=5)
         addColButton = Button(self.newMatrixFrame, text='+', command=self.addCol)
         addColButton.grid(row=0, column=self.col + 6)
+
+        # Add the precisions options for the user
+        label1 = Label(self.newMatrixFrame, text="precision (in decimal places): ")
+        label1.grid(row=self.row+1, column=1, columnspan=4, sticky=W)
+        self.decimalEntry = Entry(self.newMatrixFrame, width=25)
+        self.decimalEntry.grid(row=self.row+1, column=5,columnspan=5)
+
+        label1 = Label(self.newMatrixFrame, text="precision (in digit number): ")
+        label1.grid(row=self.row+2, column=1, columnspan=4, sticky=W)
+        entry1 = Entry(self.newMatrixFrame, width=25)
+        entry1.grid(row=self.row+2, column=5, columnspan=5)
 
     def left(self, event):
         """
@@ -333,7 +348,7 @@ class MatrixCreationWindow:
                 text = entry.get()
                 demand[r, c] = float(text)
 
-        pr = precision(128)
+        pr = precision(eval(self.decimalEntry.get()))
         demand = FloatMPApproximationMatrix(demand.tolist(), pr)
         if ret:
             return demand
