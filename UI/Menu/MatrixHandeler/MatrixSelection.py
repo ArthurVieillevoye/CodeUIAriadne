@@ -106,7 +106,7 @@ class Matrices:
         self.clearFrame()
 
         self.root.clipboard_clear()
-        self.root.clipboard_append(self.selectedMatrix)
+        self.root.clipboard_append(repr(self.selectedMatrix))
         self.textArea.addMatrixDisplay(self.frame, str(self.selectedMatrix))
 
     def deleteMatrix(self, i):

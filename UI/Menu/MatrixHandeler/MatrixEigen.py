@@ -178,9 +178,9 @@ class MatrixEigen:
         """
         self.root.clipboard_clear()
         if midPoint:
-            selectedEigen = (cast_exact(self.eigenValuesList[i]), cast_exact(self.eigenVectorList[i]))
+            selectedEigen = (repr(cast_exact(self.eigenValuesList[i])), repr(cast_exact(self.eigenVectorList[i])))
         else:
-            selectedEigen = (self.eigenValuesList[i], self.eigenVectorList[i])
+            selectedEigen = (repr(self.eigenValuesList[i]), repr(self.eigenVectorList[i]))
 
         self.root.clipboard_append(selectedEigen)
 
