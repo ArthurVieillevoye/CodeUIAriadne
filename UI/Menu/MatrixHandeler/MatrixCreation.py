@@ -93,13 +93,19 @@ class MatrixCreationWindow:
         # Add the precisions options for the user
         label1 = Label(self.newMatrixFrame, text="precision (in decimal places): ")
         label1.grid(row=2, column=1)
-        decimalEntry = Entry(self.newMatrixFrame, width=25)
-        decimalEntry.grid(row=2, column=2, sticky=W)
+        sv1 = StringVar()
+        sv1.trace("w", lambda name, index, mode, sv=sv1: self.digitToDecimal(sv1))
+        self.decimalEntry = Entry(self.newMatrixFrame, width=25)
+        self.decimalEntry.grid(row=2, column=2, sticky=W)
 
         label1 = Label(self.newMatrixFrame, text="precision (in digit number): ")
         label1.grid(row=3, column=1)
-        digitEntry = Entry(self.newMatrixFrame, width=25)
-        digitEntry.grid(row=3, column=2, sticky=W)
+        sv2 = StringVar()
+        sv2.trace("w", lambda name, index, mode, sv=sv2: self.digitToDecimal(sv2))
+        self.digitEntry = Entry(self.newMatrixFrame, width=25, textvariable=sv2)
+        self.digitEntry.grid(row=3, column=2, sticky=W)
+
+        self.decimalEntry.config(textvariable=sv1)
 
         button = Button(self.newMatrixFrame, text='Get Data', command=lambda: self.verifyName(df, e.get(), digitEntry.get()))
         button.grid(row=4, column=1)
@@ -115,7 +121,11 @@ class MatrixCreationWindow:
             self.textArea.printInOutputArea('Error: name missing')
         else:
             # If the name is correct, save the matrix.
-            pr = precision(math.ceil(eval(digitPrecision)))
+            try:
+                pr = precision(math.ceil(eval(digitPrecision)))
+            except:
+                decimalEntered = math.floor(eval(sv.get()))
+                pr = precision(math.ceil(decimalEntered * math.log(10) / math.log(2)))
             myMatrix = FloatMPApproximationMatrix(df.values.tolist(), pr)
             self.matrixMemory.addMatrix(myMatrix, e)
             self.textArea.printInOutputArea("Matrix \"" + e + "\" saved")
@@ -147,13 +157,19 @@ class MatrixCreationWindow:
         # Add the precisions options for the user
         label1 = Label(self.newMatrixFrame, text="precision (in decimal places): ")
         label1.grid(row=3, column=1)
-        decimalEntry = Entry(self.newMatrixFrame, width=25)
-        decimalEntry.grid(row=3, column=2, sticky=W)
+        sv1 = StringVar()
+        sv1.trace("w", lambda name, index, mode, sv=sv1: self.digitToDecimal(sv1))
+        self.decimalEntry = Entry(self.newMatrixFrame, width=25)
+        self.decimalEntry.grid(row=3, column=2, sticky=W)
 
         label1 = Label(self.newMatrixFrame, text="precision (in digit number): ")
         label1.grid(row=4, column=1)
-        digitEntry = Entry(self.newMatrixFrame, width=25)
-        digitEntry.grid(row=4, column=2, sticky=W)
+        sv2 = StringVar()
+        sv2.trace("w", lambda name, index, mode, sv=sv2: self.digitToDecimal(sv2))
+        self.digitEntry = Entry(self.newMatrixFrame, width=25, textvariable=sv2)
+        self.digitEntry.grid(row=4, column=2, sticky=W)
+
+        self.decimalEntry.config(textvariable=sv1)
 
         button = Button(self.newMatrixFrame, text='save Matrix', padx=5, pady=5,
                         command=lambda: self.decodeEnteredMatrix(matrixEntry.get(), entryName.get(), digitEntry.get()))
@@ -172,7 +188,11 @@ class MatrixCreationWindow:
         else:
             try:
                 # If the user enters its matrix in python form
-                pr = precision(math.ceil(eval(digitPrecision)))
+                try:
+                    pr = precision(math.ceil(eval(digitPrecision)))
+                except:
+                    decimalEntered = math.floor(eval(sv.get()))
+                    pr = precision(math.ceil(decimalEntered * math.log(10) / math.log(2)))
                 self.matrixMemory.addMatrix(FloatMPApproximationMatrix(eval(matrix), pr), name)
                 self.textArea.printInOutputArea("Matrix \"" + name + "\" saved")
             except:
@@ -187,7 +207,12 @@ class MatrixCreationWindow:
                     for el in matrix:
                         listTmp = '[' + el + ']'
                         myMatrix.append(eval(listTmp))
-                    pr = precision(math.ceil(eval(digitPrecision)))
+
+                    try:
+                        pr = precision(math.ceil(eval(digitPrecision)))
+                    except:
+                        decimalEntered = math.floor(eval(sv.get()))
+                        pr = precision(math.ceil(decimalEntered * math.log(10) / math.log(2)))
                     self.matrixMemory.addMatrix(FloatMPApproximationMatrix(myMatrix, pr), name)
                     self.textArea.printInOutputArea("Matrix \"" + name + "\" saved")
                 except:
@@ -291,13 +316,34 @@ class MatrixCreationWindow:
         # Add the precisions options for the user
         label1 = Label(self.newMatrixFrame, text="precision (in decimal places): ")
         label1.grid(row=self.row+1, column=1, columnspan=4, sticky=W)
-        decimalEntry = Entry(self.newMatrixFrame, width=25)
-        decimalEntry.grid(row=self.row+1, column=5,columnspan=5)
+        sv1 = StringVar()
+        sv1.trace("w", lambda name, index, mode, sv=sv1: self.decimalToDigit(sv1))
+        self.decimalEntry = Entry(self.newMatrixFrame, width=25)
+        self.decimalEntry.insert(END, "38")
+        self.decimalEntry.grid(row=self.row+1, column=5,columnspan=5)
 
         label1 = Label(self.newMatrixFrame, text="precision (in digit number): ")
         label1.grid(row=self.row+2, column=1, columnspan=4, sticky=W)
-        self.digitEntry = Entry(self.newMatrixFrame, width=25)
+        sv2 = StringVar()
+        sv2.trace("w", lambda name, index, mode, sv=sv2: self.digitToDecimal(sv2))
+        self.digitEntry = Entry(self.newMatrixFrame, width=25, textvariable=sv2)
+        self.digitEntry.insert(END, "128")
         self.digitEntry.grid(row=self.row+2, column=5, columnspan=5)
+        self.decimalEntry.config(textvariable=sv1)
+
+    def decimalToDigit(self, sv):
+        if sv.get() != '':
+            decimalEntered = math.floor(eval(sv.get()))
+            digit = math.ceil(decimalEntered*math.log(10)/math.log(2))
+            self.digitEntry.delete(0, END)
+            self.textArea.printInOutputArea("New precision in decimal= "+ str(decimalEntered) + ", in number of digit:" + str(digit))
+
+    def digitToDecimal(self, sv):
+        if sv.get() != '':
+            digitEntered = math.ceil(eval(sv.get()))
+            deci = math.floor(digitEntered*math.log(2)/math.log(10))
+            self.decimalEntry.delete(0, END)
+            self.textArea.printInOutputArea("New precision in decimal= "+ str(deci) + ", in number of digit:" + str(digitEntered))
 
     def left(self, event):
         """
@@ -369,7 +415,11 @@ class MatrixCreationWindow:
                 text = entry.get()
                 demand[r, c] = float(text)
 
-        pr = precision(math.ceil(eval(self.digitEntry.get())))
+        try:
+            pr = precision(math.ceil(eval(self.digitEntry)))
+        except:
+            decimalEntered = math.floor(eval(self.decimalEntry.get()))
+            pr = precision(math.ceil(decimalEntered * math.log(10) / math.log(2)))
         demand = FloatMPApproximationMatrix(demand.tolist(), pr)
         if ret:
             return demand
