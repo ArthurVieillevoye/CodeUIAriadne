@@ -1,3 +1,4 @@
+import math
 from tkinter import *
 import numpy as np
 from pyariadne import *
@@ -28,15 +29,18 @@ class Matrices:
             Radiobutton(window, text=text, padx=20, variable=var, value=i, command= lambda: self.radioButtonSelected(var.get())).pack(anchor=W)
 
         # Add the buttons for the different users options.
-        buttonSee = Button(window, text="Modify Matrix", width=10, padx=5, pady=5,
+        buttonSee = Button(window, text="Modify Matrix", width=18, padx=5, pady=5,
                            command=lambda: self.showSelectedMatrix(var.get()))
         buttonSee.pack(anchor=W)
-        buttonSee = Button(window, text="Print Matrix", width=10, padx=5, pady=5,
+        buttonPrecision = Button(window, text="Modify Matrix Precision", width=18, padx=5, pady=5,
+                            command=lambda: self.modifyPrecision(var.get()))
+        buttonPrecision.pack(anchor=W)
+        buttonSee = Button(window, text="Print Matrix", width=18, padx=5, pady=5,
                            command=lambda: self.printMatrix(var.get()))
         buttonSee.pack(anchor=W)
-        buttonCopy = Button(window, text="Copy Matrix", width=10, padx=5, pady=5, command=self.gtc)
+        buttonCopy = Button(window, text="Copy Matrix", width=18, padx=5, pady=5, command=self.gtc)
         buttonCopy.pack(anchor=W)
-        buttonCopy = Button(window, text="Delete Matrix", width=10, padx=5, pady=5,
+        buttonCopy = Button(window, text="Delete Matrix", width=18, padx=5, pady=5,
                             command=lambda: self.deleteMatrix(var.get()))
         buttonCopy.pack(anchor=W)
 
@@ -87,6 +91,40 @@ class Matrices:
         saveButton = Button(window, text='save changes', padx=5, pady=5, command=lambda: self.get_data(i))
         saveButton.grid(row=self.row + 1, column=1, sticky="ew")
         window.grid(row=0, column=1, sticky=N + S + E + W)
+
+    def modifyPrecision(self, i):
+        """
+        This matrix is used to allow the user to modify the precision of one of its matrix.
+        :param i: The selected matrix.
+        """
+        self.clearFrame()
+        window = Frame(self.frame)
+
+        selectedMatrix = self.matrices.pop(i)
+
+        # Add the precisions options for the user
+        label1 = Label(window, text="precision (in decimal places): ")
+        label1.grid(row=0, column=0, padx=5, pady=5)
+        decimalEntry = Entry(window, width=25)
+        decimalEntry.grid(row=0, column=1, padx=5, pady=5, sticky=N +W)
+
+        label1 = Label(window, text="precision (in digit number): ")
+        label1.grid(row=1, column=0, padx=5, pady=5)
+        digitEntry = Entry(window, width=25)
+        digitEntry.grid(row=1, column=1, padx=5, pady=5, sticky=N + W)
+
+        buttonSave = Button(window, text='Save Changes', padx=5, pady=5, command=lambda: self.saveNewPrecision(selectedMatrix, digitEntry))
+        buttonSave.grid(row=2, column=0, columnspan=2, padx=5, pady=5)
+
+        window.grid(row=0, column=1, sticky=N + S + E + W)
+
+    def saveNewPrecision(self, selectedMatrix, digitEntry):
+        newPrecision = math.ceil(eval(digitEntry.get()))
+        matrix = repr(selectedMatrix[0])
+        matrix = matrix.replace(str(selectedMatrix[0][0,0].precision()), "mp("+str(newPrecision)+")")
+
+        self.addMatrix(eval(matrix), selectedMatrix[1])
+        self.textArea.printInOutputArea("Modification in matrix \"" + selectedMatrix[1] + "\" saved")
 
     def printMatrix(self, i):
         """

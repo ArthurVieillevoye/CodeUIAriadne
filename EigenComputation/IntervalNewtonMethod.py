@@ -69,7 +69,7 @@ def intervalNewtonMethods(v,lamb, A):
     print("inv(A)", inverse(A))
     assert (type(lamb) == FloatDPBounds or type(lamb) == FloatMPBounds)
 
-    # precision = cast_exact(FloatDPApproximation("0.00000000000000001", dp))
+    # tolerance = cast_exact(FloatMPApproximation("0.00000000000000001", dp))
 
     for i in range(5):
 

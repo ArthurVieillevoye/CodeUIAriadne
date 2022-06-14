@@ -1,9 +1,9 @@
 from tkinter import *
 import numpy as np
-# import pandas as pd
+import pandas as pd
 from tkinter import filedialog
 from pyariadne import *
-
+import math
 
 class MatrixCreationWindow:
     """
@@ -69,21 +69,17 @@ class MatrixCreationWindow:
             try:
                 # Cast the matrix from excel file to the Ariadne matrices.
                 df = pd.read_excel(open_file_loc, header=None)
-                pr = precision(128)
-                myMatrix = FloatMPApproximationMatrix(df.values.tolist(), pr)
-                self.nameWindowForUploadedMatrices(myMatrix)
+                self.nameWindowForUploadedMatrices(df)
             except:
                 try:
                     # Casst the matrix from csv file to the Ariadne matrix.
                     df = pd.read_csv(open_file_loc, header=None, sep=';')
-                    pr = precision(128)
-                    myMatrix = FloatMPApproximationMatrix(df.values.tolist(), pr)
-                    self.nameWindowForUploadedMatrices(myMatrix)
+                    self.nameWindowForUploadedMatrices(df)
                 except:
                     # If the user entered a wrong file type.
                     self.textArea.printInOutputArea("Error: File is not in the correct format (.csv or .xcel)")
 
-    def nameWindowForUploadedMatrices(self, myMatrix):
+    def nameWindowForUploadedMatrices(self, df):
         """
         Ask the user for the name of the matrix that he xants to create.
         :param myMatrix: Tha Ariadne matrix extracted from the file.
@@ -94,10 +90,21 @@ class MatrixCreationWindow:
         e = Entry(self.newMatrixFrame, width=30, borderwidth=5)
         e.grid(row=1, column=1)
 
-        button = Button(self.newMatrixFrame, text='Get Data', command=lambda: self.verifyName(myMatrix, e.get()))
-        button.grid(row=2, column=1)
+        # Add the precisions options for the user
+        label1 = Label(self.newMatrixFrame, text="precision (in decimal places): ")
+        label1.grid(row=2, column=1)
+        decimalEntry = Entry(self.newMatrixFrame, width=25)
+        decimalEntry.grid(row=2, column=2, sticky=W)
 
-    def verifyName(self, myMatrix, e):
+        label1 = Label(self.newMatrixFrame, text="precision (in digit number): ")
+        label1.grid(row=3, column=1)
+        digitEntry = Entry(self.newMatrixFrame, width=25)
+        digitEntry.grid(row=3, column=2, sticky=W)
+
+        button = Button(self.newMatrixFrame, text='Get Data', command=lambda: self.verifyName(df, e.get(), digitEntry.get()))
+        button.grid(row=4, column=1)
+
+    def verifyName(self, df, e, digitPrecision):
         """
         Verify the correctness of the entered name.
         :param myMatrix: The Ariadne matrix
@@ -108,7 +115,10 @@ class MatrixCreationWindow:
             self.textArea.printInOutputArea('Error: name missing')
         else:
             # If the name is correct, save the matrix.
+            pr = precision(math.ceil(eval(digitPrecision)))
+            myMatrix = FloatMPApproximationMatrix(df.values.tolist(), pr)
             self.matrixMemory.addMatrix(myMatrix, e)
+            self.textArea.printInOutputArea("Matrix \"" + e + "\" saved")
 
     ###################################################################
     #   SECTION ENTER MATRIX AS TEXT
@@ -134,11 +144,22 @@ class MatrixCreationWindow:
         entryName = Entry(self.newMatrixFrame, width=50)
         entryName.grid(row=2, column=2, sticky=W)
 
-        button = Button(self.newMatrixFrame, text='save Matrix', padx=5, pady=5,
-                        command=lambda: self.decodeEnteredMatrix(matrixEntry.get(), entryName.get()))
-        button.grid(row=3, column=1)
+        # Add the precisions options for the user
+        label1 = Label(self.newMatrixFrame, text="precision (in decimal places): ")
+        label1.grid(row=3, column=1)
+        decimalEntry = Entry(self.newMatrixFrame, width=25)
+        decimalEntry.grid(row=3, column=2, sticky=W)
 
-    def decodeEnteredMatrix(self, matrix, name):
+        label1 = Label(self.newMatrixFrame, text="precision (in digit number): ")
+        label1.grid(row=4, column=1)
+        digitEntry = Entry(self.newMatrixFrame, width=25)
+        digitEntry.grid(row=4, column=2, sticky=W)
+
+        button = Button(self.newMatrixFrame, text='save Matrix', padx=5, pady=5,
+                        command=lambda: self.decodeEnteredMatrix(matrixEntry.get(), entryName.get(), digitEntry.get()))
+        button.grid(row=5, column=1)
+
+    def decodeEnteredMatrix(self, matrix, name, digitPrecision):
         """
         Decode the entered matrix to save it.
         Throw an error if the matrix is not in the two correct form.
@@ -151,7 +172,7 @@ class MatrixCreationWindow:
         else:
             try:
                 # If the user enters its matrix in python form
-                pr = precision(128)
+                pr = precision(math.ceil(eval(digitPrecision)))
                 self.matrixMemory.addMatrix(FloatMPApproximationMatrix(eval(matrix), pr), name)
                 self.textArea.printInOutputArea("Matrix \"" + name + "\" saved")
             except:
@@ -166,7 +187,7 @@ class MatrixCreationWindow:
                     for el in matrix:
                         listTmp = '[' + el + ']'
                         myMatrix.append(eval(listTmp))
-                    pr = precision(128)
+                    pr = precision(math.ceil(eval(digitPrecision)))
                     self.matrixMemory.addMatrix(FloatMPApproximationMatrix(myMatrix, pr), name)
                     self.textArea.printInOutputArea("Matrix \"" + name + "\" saved")
                 except:
@@ -270,13 +291,13 @@ class MatrixCreationWindow:
         # Add the precisions options for the user
         label1 = Label(self.newMatrixFrame, text="precision (in decimal places): ")
         label1.grid(row=self.row+1, column=1, columnspan=4, sticky=W)
-        self.decimalEntry = Entry(self.newMatrixFrame, width=25)
-        self.decimalEntry.grid(row=self.row+1, column=5,columnspan=5)
+        decimalEntry = Entry(self.newMatrixFrame, width=25)
+        decimalEntry.grid(row=self.row+1, column=5,columnspan=5)
 
         label1 = Label(self.newMatrixFrame, text="precision (in digit number): ")
         label1.grid(row=self.row+2, column=1, columnspan=4, sticky=W)
-        entry1 = Entry(self.newMatrixFrame, width=25)
-        entry1.grid(row=self.row+2, column=5, columnspan=5)
+        self.digitEntry = Entry(self.newMatrixFrame, width=25)
+        self.digitEntry.grid(row=self.row+2, column=5, columnspan=5)
 
     def left(self, event):
         """
@@ -348,7 +369,7 @@ class MatrixCreationWindow:
                 text = entry.get()
                 demand[r, c] = float(text)
 
-        pr = precision(eval(self.decimalEntry.get()))
+        pr = precision(math.ceil(eval(self.digitEntry.get())))
         demand = FloatMPApproximationMatrix(demand.tolist(), pr)
         if ret:
             return demand
