@@ -140,7 +140,7 @@ class Matrices:
         selectedMatrix = self.matrices.pop(i)
 
         try:
-            pnewPrecisionr = precision(math.ceil(eval(self.digitEntry)))
+            pnewPrecisionr = precision(math.ceil(eval(self.digitEntry.get())))
         except:
             decimalEntered = math.floor(eval(self.decimalEntry.get()))
             newPrecision = precision(math.ceil(decimalEntered * math.log(10) / math.log(2)))

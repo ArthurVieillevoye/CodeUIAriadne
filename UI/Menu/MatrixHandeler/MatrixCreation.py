@@ -103,6 +103,7 @@ class MatrixCreationWindow:
         sv2 = StringVar()
         sv2.trace("w", lambda name, index, mode, sv=sv2: self.digitToDecimal(sv2))
         self.digitEntry = Entry(self.newMatrixFrame, width=25, textvariable=sv2)
+        self.digitEntry.insert(END, "128")
         self.digitEntry.grid(row=3, column=2, sticky=W)
 
         self.decimalEntry.config(textvariable=sv1)
@@ -167,6 +168,7 @@ class MatrixCreationWindow:
         sv2 = StringVar()
         sv2.trace("w", lambda name, index, mode, sv=sv2: self.digitToDecimal(sv2))
         self.digitEntry = Entry(self.newMatrixFrame, width=25, textvariable=sv2)
+        self.digitEntry.insert(END, "128")
         self.digitEntry.grid(row=4, column=2, sticky=W)
 
         self.decimalEntry.config(textvariable=sv1)
@@ -319,7 +321,6 @@ class MatrixCreationWindow:
         sv1 = StringVar()
         sv1.trace("w", lambda name, index, mode, sv=sv1: self.decimalToDigit(sv1))
         self.decimalEntry = Entry(self.newMatrixFrame, width=25)
-        self.decimalEntry.insert(END, "38")
         self.decimalEntry.grid(row=self.row+1, column=5,columnspan=5)
 
         label1 = Label(self.newMatrixFrame, text="precision (in digit number): ")
@@ -352,7 +353,6 @@ class MatrixCreationWindow:
         if self.entryColumns - 1 >= 0:
             self.entryColumns = self.entryColumns - 1
             self.entries[self.entryRow][self.entryColumns].focus()
-            print(self.entryRow, self.entryColumns)
 
     def right(self, event):
         """
@@ -360,7 +360,6 @@ class MatrixCreationWindow:
         """
         if self.entryColumns + 1 <= self.col:
             self.entryColumns = self.entryColumns + 1
-            print(self.entryRow, self.entryColumns)
             self.entries[self.entryRow][self.entryColumns].focus()
 
     def up(self, event):
@@ -369,7 +368,6 @@ class MatrixCreationWindow:
         """
         if self.entryRow - 1 >= 0:
             self.entryRow = self.entryRow - 1
-            print(self.entryRow, self.entryColumns)
             self.entries[self.entryRow][self.entryColumns].focus()
 
     def down(self, event):
@@ -378,7 +376,6 @@ class MatrixCreationWindow:
         """
         if self.entryRow + 1 <= self.row:
             self.entryRow = self.entryRow + 1
-            print(self.entryRow, self.entryColumns)
             self.entries[self.entryRow][self.entryColumns].focus()
 
     def addRow(self):
@@ -416,8 +413,9 @@ class MatrixCreationWindow:
                 demand[r, c] = float(text)
 
         try:
-            pr = precision(math.ceil(eval(self.digitEntry)))
+            pr = precision(math.ceil(eval(self.digitEntry.get())))
         except:
+            print(self.decimalEntry.get())
             decimalEntered = math.floor(eval(self.decimalEntry.get()))
             pr = precision(math.ceil(decimalEntered * math.log(10) / math.log(2)))
         demand = FloatMPApproximationMatrix(demand.tolist(), pr)
