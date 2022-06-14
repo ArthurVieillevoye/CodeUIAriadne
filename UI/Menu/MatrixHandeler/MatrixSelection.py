@@ -25,7 +25,7 @@ class Matrices:
 
         # Add the matrices in a nice way to the frame.
         for i in range(len(self.matrices)):
-            text = self.matrices[i][1] + ': (' + str(self.matrices[i][0].column_size()) + ' ' + str(self.matrices[i][0].row_size()) + ')'
+            text = self.matrices[i][1] + ': (' + str(self.matrices[i][0].row_size()) + ' ' + str(self.matrices[i][0].column_size()) + ')'
             Radiobutton(window, text=text, padx=20, variable=var, value=i, command= lambda: self.radioButtonSelected(var.get())).pack(anchor=W)
 
         # Add the buttons for the different users options.

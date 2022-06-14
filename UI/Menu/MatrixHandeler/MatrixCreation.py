@@ -94,7 +94,7 @@ class MatrixCreationWindow:
         label1 = Label(self.newMatrixFrame, text="precision (in decimal places): ")
         label1.grid(row=2, column=1)
         sv1 = StringVar()
-        sv1.trace("w", lambda name, index, mode, sv=sv1: self.digitToDecimal(sv1))
+        sv1.trace("w", lambda name, index, mode, sv=sv1: self.decimalToDigit(sv1))
         self.decimalEntry = Entry(self.newMatrixFrame, width=25)
         self.decimalEntry.grid(row=2, column=2, sticky=W)
 
@@ -107,7 +107,7 @@ class MatrixCreationWindow:
 
         self.decimalEntry.config(textvariable=sv1)
 
-        button = Button(self.newMatrixFrame, text='Get Data', command=lambda: self.verifyName(df, e.get(), digitEntry.get()))
+        button = Button(self.newMatrixFrame, text='Get Data', command=lambda: self.verifyName(df, e.get(), self.digitEntry.get()))
         button.grid(row=4, column=1)
 
     def verifyName(self, df, e, digitPrecision):
@@ -124,7 +124,7 @@ class MatrixCreationWindow:
             try:
                 pr = precision(math.ceil(eval(digitPrecision)))
             except:
-                decimalEntered = math.floor(eval(sv.get()))
+                decimalEntered = math.floor(eval(self.decimalEntry.get()))
                 pr = precision(math.ceil(decimalEntered * math.log(10) / math.log(2)))
             myMatrix = FloatMPApproximationMatrix(df.values.tolist(), pr)
             self.matrixMemory.addMatrix(myMatrix, e)
@@ -158,7 +158,7 @@ class MatrixCreationWindow:
         label1 = Label(self.newMatrixFrame, text="precision (in decimal places): ")
         label1.grid(row=3, column=1)
         sv1 = StringVar()
-        sv1.trace("w", lambda name, index, mode, sv=sv1: self.digitToDecimal(sv1))
+        sv1.trace("w", lambda name, index, mode, sv=sv1: self.decimalToDigit(sv1))
         self.decimalEntry = Entry(self.newMatrixFrame, width=25)
         self.decimalEntry.grid(row=3, column=2, sticky=W)
 
@@ -172,7 +172,7 @@ class MatrixCreationWindow:
         self.decimalEntry.config(textvariable=sv1)
 
         button = Button(self.newMatrixFrame, text='save Matrix', padx=5, pady=5,
-                        command=lambda: self.decodeEnteredMatrix(matrixEntry.get(), entryName.get(), digitEntry.get()))
+                        command=lambda: self.decodeEnteredMatrix(matrixEntry.get(), entryName.get(), self.digitEntry.get()))
         button.grid(row=5, column=1)
 
     def decodeEnteredMatrix(self, matrix, name, digitPrecision):
@@ -191,7 +191,7 @@ class MatrixCreationWindow:
                 try:
                     pr = precision(math.ceil(eval(digitPrecision)))
                 except:
-                    decimalEntered = math.floor(eval(sv.get()))
+                    decimalEntered = math.floor(eval(self.decimalEntry.get()))
                     pr = precision(math.ceil(decimalEntered * math.log(10) / math.log(2)))
                 self.matrixMemory.addMatrix(FloatMPApproximationMatrix(eval(matrix), pr), name)
                 self.textArea.printInOutputArea("Matrix \"" + name + "\" saved")
@@ -211,7 +211,7 @@ class MatrixCreationWindow:
                     try:
                         pr = precision(math.ceil(eval(digitPrecision)))
                     except:
-                        decimalEntered = math.floor(eval(sv.get()))
+                        decimalEntered = math.floor(eval(self.decimalEntry.get()))
                         pr = precision(math.ceil(decimalEntered * math.log(10) / math.log(2)))
                     self.matrixMemory.addMatrix(FloatMPApproximationMatrix(myMatrix, pr), name)
                     self.textArea.printInOutputArea("Matrix \"" + name + "\" saved")
