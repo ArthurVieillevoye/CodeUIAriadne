@@ -103,25 +103,50 @@ class Matrices:
         # Add the precisions options for the user
         label1 = Label(window, text="precision (in decimal places): ")
         label1.grid(row=0, column=0, padx=5, pady=5)
-        decimalEntry = Entry(window, width=25)
-        decimalEntry.grid(row=0, column=1, padx=5, pady=5, sticky=N +W)
+        sv1 = StringVar()
+        sv1.trace("w", lambda name, index, mode, sv=sv1: self.decimalToDigit(sv1))
+        self.decimalEntry = Entry(window, width=25)
+        self.decimalEntry.grid(row=0, column=1, padx=5, pady=5, sticky=N +W)
 
         label1 = Label(window, text="precision (in digit number): ")
         label1.grid(row=1, column=0, padx=5, pady=5)
-        digitEntry = Entry(window, width=25)
-        digitEntry.grid(row=1, column=1, padx=5, pady=5, sticky=N + W)
+        sv2 = StringVar()
+        sv2.trace("w", lambda name, index, mode, sv=sv2: self.digitToDecimal(sv2))
+        self.digitEntry = Entry(window, width=25, textvariable=sv2)
+        self.digitEntry.grid(row=1, column=1, padx=5, pady=5, sticky=N + W)
 
-        buttonSave = Button(window, text='Save Changes', padx=5, pady=5, command=lambda: self.saveNewPrecision(i, digitEntry))
+        self.decimalEntry.config(textvariable=sv1)
+
+        buttonSave = Button(window, text='Save Changes', padx=5, pady=5, command=lambda: self.saveNewPrecision(i))
         buttonSave.grid(row=2, column=0, columnspan=2, padx=5, pady=5)
 
         window.grid(row=0, column=1, sticky=N + S + E + W)
 
-    def saveNewPrecision(self, selectedMatrix, digitEntry):
+    def decimalToDigit(self, sv):
+        if sv.get() != '':
+            decimalEntered = math.floor(eval(sv.get()))
+            digit = math.ceil(decimalEntered*math.log(10)/math.log(2))
+            self.digitEntry.delete(0, END)
+            self.textArea.printInOutputArea("New precision in decimal= "+ str(decimalEntered) + ", in number of digit:" + str(digit))
+
+    def digitToDecimal(self, sv):
+        if sv.get() != '':
+            digitEntered = math.ceil(eval(sv.get()))
+            deci = math.floor(digitEntered*math.log(2)/math.log(10))
+            self.decimalEntry.delete(0, END)
+            self.textArea.printInOutputArea("New precision in decimal= "+ str(deci) + ", in number of digit:" + str(digitEntered))
+
+    def saveNewPrecision(self, i):
         selectedMatrix = self.matrices.pop(i)
 
-        newPrecision = math.ceil(eval(digitEntry.get()))
+        try:
+            pnewPrecisionr = precision(math.ceil(eval(self.digitEntry)))
+        except:
+            decimalEntered = math.floor(eval(self.decimalEntry.get()))
+            newPrecision = precision(math.ceil(decimalEntered * math.log(10) / math.log(2)))
+
         matrix = repr(selectedMatrix[0])
-        matrix = matrix.replace(str(selectedMatrix[0][0,0].precision()), "mp("+str(newPrecision)+")")
+        matrix = matrix.replace(str(selectedMatrix[0][0,0].precision()), str(newPrecision))
 
         self.addMatrix(eval(matrix), selectedMatrix[1])
         self.textArea.printInOutputArea("Modification in matrix \"" + selectedMatrix[1] + "\" saved")
