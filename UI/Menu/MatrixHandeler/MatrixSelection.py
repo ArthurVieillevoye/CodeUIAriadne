@@ -100,8 +100,6 @@ class Matrices:
         self.clearFrame()
         window = Frame(self.frame)
 
-        selectedMatrix = self.matrices.pop(i)
-
         # Add the precisions options for the user
         label1 = Label(window, text="precision (in decimal places): ")
         label1.grid(row=0, column=0, padx=5, pady=5)
@@ -113,18 +111,21 @@ class Matrices:
         digitEntry = Entry(window, width=25)
         digitEntry.grid(row=1, column=1, padx=5, pady=5, sticky=N + W)
 
-        buttonSave = Button(window, text='Save Changes', padx=5, pady=5, command=lambda: self.saveNewPrecision(selectedMatrix, digitEntry))
+        buttonSave = Button(window, text='Save Changes', padx=5, pady=5, command=lambda: self.saveNewPrecision(i, digitEntry))
         buttonSave.grid(row=2, column=0, columnspan=2, padx=5, pady=5)
 
         window.grid(row=0, column=1, sticky=N + S + E + W)
 
     def saveNewPrecision(self, selectedMatrix, digitEntry):
+        selectedMatrix = self.matrices.pop(i)
+
         newPrecision = math.ceil(eval(digitEntry.get()))
         matrix = repr(selectedMatrix[0])
         matrix = matrix.replace(str(selectedMatrix[0][0,0].precision()), "mp("+str(newPrecision)+")")
 
         self.addMatrix(eval(matrix), selectedMatrix[1])
         self.textArea.printInOutputArea("Modification in matrix \"" + selectedMatrix[1] + "\" saved")
+        self.seeMatrices()
 
     def printMatrix(self, i):
         """
@@ -224,6 +225,7 @@ class Matrices:
         else:
             self.addMatrix(demand, selectedMatrix[1])
             self.textArea.printInOutputArea("Modification in matrix \""+ selectedMatrix[1] + "\" saved")
+        self.seeMatrices()
 
     def radioButtonSelected(self, i):
         """
