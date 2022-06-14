@@ -58,7 +58,7 @@ class MatrixEigen:
         self.clearFrame()
 
         self.selectedMatrix = self.allMyMmatrices[self.options.index(self.comboBox.get())][0]
-        self.textArea.addMatrixDisplay(self.frame, text=str(self.selectedMatrix))
+        self.textArea.addMatrixDisplay(self.frame, text=str(self.selectedMatrix) + "\n" + repr(self.selectedMatrix[0,0].precision()))
 
     def allEigenButtonActive(self):
         """

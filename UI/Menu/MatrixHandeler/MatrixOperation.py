@@ -136,7 +136,7 @@ class MatrixMult:
         self.text = self.text + self.allMyMmatrices[self.options.index(self.comboBox.get())][1]
         self.operands.append(self.allMyMmatrices[self.options.index(self.comboBox.get())][1])
         self.selectedMatrix = self.allMyMmatrices[self.options.index(self.comboBox.get())][0]
-        self.textArea.addMatrixDisplay(self.frame, text=str(self.selectedMatrix))
+        self.textArea.addMatrixDisplay(self.frame, text=str(self.selectedMatrix) + "\n" + repr(self.selectedMatrix[0,0].precision()))
         self.printOnTextArea(self.text)
 
 ######################################################

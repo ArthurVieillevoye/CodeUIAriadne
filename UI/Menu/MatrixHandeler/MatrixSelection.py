@@ -235,7 +235,7 @@ class Matrices:
         self.clearFrame()
 
         self.selectedMatrix = self.matrices[i][0]
-        self.textArea.addMatrixDisplay(self.frame, str(self.selectedMatrix))
+        self.textArea.addMatrixDisplay(self.frame, str(self.selectedMatrix) + "\n" + repr(self.selectedMatrix[0,0].precision()))
 
     def clearFrame(self):
         """
