@@ -113,6 +113,10 @@ class Matrices:
         sv2 = StringVar()
         sv2.trace("w", lambda name, index, mode, sv=sv2: self.digitToDecimal(sv2))
         self.digitEntry = Entry(window, width=25, textvariable=sv2)
+        text = str(self.matrices[i][0][0,0].precision())
+        text = text.replace("mp(", "")
+        text = text.replace(")", "")
+        self.digitEntry.insert(END, text)
         self.digitEntry.grid(row=1, column=1, padx=5, pady=5, sticky=N + W)
 
         self.decimalEntry.config(textvariable=sv1)
@@ -140,7 +144,7 @@ class Matrices:
         selectedMatrix = self.matrices.pop(i)
 
         try:
-            pnewPrecisionr = precision(math.ceil(eval(self.digitEntry.get())))
+            newPrecision = precision(math.ceil(eval(self.digitEntry.get())))
         except:
             decimalEntered = math.floor(eval(self.decimalEntry.get()))
             newPrecision = precision(math.ceil(decimalEntered * math.log(10) / math.log(2)))
