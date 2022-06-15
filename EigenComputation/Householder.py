@@ -3,135 +3,38 @@ import math
 from pyariadne import *
 
 
-def normQR(x):
-    '''
-    Compute the norm of the vector X
-    :param x: Vector for which we want the norm
-    :return: the euclidian norm of the vector
-    '''
-    x = np.power(x, 2)
-    norm = math.sqrt(sum(x))
-    return norm
+# def inverse_power_ariadne(A, lamb, v):
+#     # tolerance = FloatMPApproximation("0.000001", A[0,0].precision())
+#     # print(getMaxValueOfVector(A*v-lamb*v))
+#     # while cast_exact(getMaxValueOfVector(A*v-lamb*v)) > cast_exact(tolerance):
+#     for i in range(5):
+#         I = FloatMPApproximationMatrix.identity(A.column_size(), A[0,0].precision())
+#         y = solve((A-lamb*I), v)
+#         print(getMaxValueOfVector(A * v - lamb * v))
+#         nv = y/norm(y)
+#         lamb = lamb + (dot(v,v)/dot(v,y))
+#         print(A * nv - lamb * nv)
+#     return lamb, nv
 
+def inverse_power_ariadne(A, lamb, v):
+    tolerance = FloatMPApproximation("0.000001", A[0,0].precision())
+    print(getMaxValueOfVector(A*v-lamb*v))
+    nv = v
+    counter = 0
+    while cast_exact(getMaxValueOfVector(A*nv-lamb*nv)) > cast_exact(tolerance) and counter < 10:
+        I = FloatMPApproximationMatrix.identity(A.column_size(), A[0,0].precision())
+        y = solve((A-lamb*I), nv)
+        nv = y/norm(y)
+        lamb = lamb + (dot(nv,nv)/dot(nv,y))
+        counter +=1
+    return lamb, nv
 
-def householderDecomposition(A):
-    '''
-    Compute the Q value for a matrix A
-    The Q matrix is an orthogonal matrix (Q.T * Q = I)
-    :param A: Input matrix (we want its Q matrix)
-    :return: The Q matrix
-    '''
-
-    # Select a vector and
-    a = A[:, 0]
-    norm = normQR(a)
-    e = np.identity(len(a))
-    e = e[:, 0]
-    # This u vector will be used to compute the v vector.
-    u = a - (norm * e)
-
-    # Calculate the v value (V = u/||u||)
-    v = np.array([(1 / normQR(u)) * u])
-
-    # Q calcuation
-    I = np.identity(v.shape[1])
-    Q = I - (2 * (np.dot(v.T, v)))
-    return Q
-
-
-def place(m, B):
-    '''
-    Place a smaller matrix B into a larger mXm identity matrix.
-    The matrix B has to be placed into the bottom right of the identity matrix.
-    This method is used in the QComputation methods in order to be able to multiply all the Q matrices.
-    :param m: The size of the larger matrix. (m>size(B))
-    :param B: The matrix we want to place in a larger matrix.
-    :return: Te new matrix containing the B matrix.
-    '''
-    #TODO: Check that m>size(B)
-    I = np.identity(m)      #The identity matrix mXm
-    o, p = B.shape
-    for i in range(m - o, m):
-        for j in range(m - o, m):
-            # Place the B matrix into the bottom right of the I matrix.
-            I[i, j] = B[i - m + o, j - m + o]
-
-    return I
-
-
-def QComputation(A):
-    # https://ristohinno.medium.com/qr-decomposition-903e8c61eaab ?
-    '''
-    Estimated complexity n×n is : (3/4)*n^3
-    Compute the Q and R values of the matrix A, such that A = Q*R.
-    :param A: Matrix that we want to decompose in Q,R
-    :return: the  and R matrices that comes from the A decomposition.
-    '''
-    # Complexity n×n est en : (3/4)*n^3
-    m, n = A.shape      # Size of the A matrix
-    Q = []              # List of all the Q values of the decomposition of the A matrix
-    newA = A.copy()
-
-    for i in range(m - 1):
-        # Compute the Q value for the matrix newA
-        q = householderDecomposition(newA)
-        newA = np.round(np.dot(q, newA), 10)    # Recompute the newA.
-
-        q = place(m, q)
-        Q.append(q)
-        # Update the newA. Since q*A gives a column of zero under the diagonal, I deleted the column and the row in
-        # order to continue finding.
-        newA = np.delete(newA, (0), axis=0)
-        newA = np.delete(newA, (0), axis=1)
-
-    # Compute the total Q matrix for the A matrix
-    QTot = np.dot(Q[0], Q[1])
-    for i in range(2, len(Q)):
-        QTot = np.dot(QTot, Q[i])
-
-    # Compute the R matrix
-    R = np.dot(QTot.T, A)
-    R = np.round(R, 10)
-    return QTot, R
-
-
-def findEigen(A):
-    '''
-    Find the eigenvalues and the eigenvector for the matrix A.
-    Uses the QR decomposition in order to find them.
-    :param A: The matrix we are interested in.
-    :return: The eigenvectors and eigenvalues of A
-    '''
-    X = A.copy()
-    pQ = np.identity(A.shape[0])
-
-    # Iterate to converge to the correct eigenvalues and eigenvectors.
-    for i in range(100):
-        Q, R = QComputation(X)
-        pQ = np.dot(pQ, Q)
-        X = np.dot(R, Q)
-        #TODO: instead of 100, check for A-diag(A) approx 0: Put tolerance as input
-        #TODO: Use Ariadne's  Matrix[FloatXPApproximation]
-
-
-    eigenVal = X.diagonal()
-    # TODO: Keep the closest one to a given estimation.
-    return eigenVal, pQ
-
-
-def eigenVal_eigenVect_verification(l, v, A):
-    I = np.identity(A.shape[0])
-    print(np.dot(A-(l*I),v))
-    print(np.isclose(np.dot(A-(l*I),v), 0))
-    # print(np.isclose(np.dot(A-(l*I),v)))
-
-
-########################################################################################################################
-########################################################################################################################
-########################################################################################################################
-########################################################################################################################
-########################################################################################################################
-
+def getMaxValueOfVector(v):
+    max = FloatMPApproximation("0", v[0].precision())
+    for i in range(len(v)):
+        if cast_exact(max) < abs(cast_exact(v[i])):
+            max = abs(v[i])
+    return max
 
 def euclNormAriadne(A):
     pr = precision(128)
@@ -170,16 +73,6 @@ def placeAriadne(m, B):
             I[i, j] = B[i - m + o, j - m + o]
 
     return I
-
-def shrinkMatrixAriadne(matrix):
-    m, n = matrix.column_size(), matrix.row_size()
-    pr = precision(128)
-    answer = FloatMPApproximationMatrix.identity(m-1, pr)
-    for i in range(1, n):
-        for j in range(1, m):
-            answer[i-1,j-1] = matrix[i,j]
-
-    return answer
 
 def householderDecompositionAriadne(A):
     '''
@@ -220,6 +113,14 @@ def householderDecompositionAriadne(A):
     Q = I - (FloatMPApproximation(2, pr) * vMatrix)
     return Q
 
+def getMaxValueBottomTriangularMatrix(A):
+    max = FloatMPApproximation(0, precision(128))
+    for i in range(A.row_size()):
+        for j in range(i):
+            if cast_exact(max) < abs(cast_exact(A[i,j])):
+                max = abs(A[i,j])
+
+    return max
 
 def DecompositionQRAriadne(A):
     '''
@@ -230,31 +131,26 @@ def DecompositionQRAriadne(A):
     '''
     # Complexity n×n est en : (3/4)*n^3
     n = A.column_size()      # Size of the A matrix
-    Q = []              # List of all the Q values of the decomposition of the A matrix
 
-    newA = copyAriadne(A)
-    for i in range(n - 1):
+    B = copyAriadne(A)
+
+    P = FloatMPApproximationMatrix.identity(n, precision(128))
+    tolerance = FloatMPApproximation("0.00001", precision(128))
+    print(cast_exact(abs(getMaxValueBottomTriangularMatrix(B))))
+    while cast_exact(getMaxValueBottomTriangularMatrix(B)) > cast_exact(tolerance):
+    # for i in range(5):
         # Compute the Q value for the matrix newA
-        q = householderDecompositionAriadne(newA)
-        newA = q * newA   # Recompute the newA.
+        (q, r) = gram_schmidt_orthogonalisation(B)
+        print("q = ", q)
+        P = P * q
+        B = r * q  # Recompute the newA.
 
-        q = placeAriadne(n, q)
-        Q.append(q)
-        # Update the newA. Since q*A gives a column of zero under the diagonal, I deleted the column and the row in
-        # order to continue finding.
-        newA = shrinkMatrixAriadne(newA)
+        # print("B", str(B))
+        # print('accuracy', cast_exact(abs(getMaxValueBottomTriangularMatrix(B))))
 
-    # Compute the total Q matrix for the A matrix
+    print("tmp", A-(P*B*transpose(P)))
+    return P, B
 
-    QTot = Q[0] * Q[1]
-    for i in range(2, len(Q)):
-        QTot = QTot * Q[i]
-
-    # print("hello", type(QTot))
-    # Compute the R matrix
-    R = transpose(QTot) * A
-    # R = np.round(R, 10)
-    return QTot, R
 
 def getDiagonalElementAriadne(matrix):
     diag = []
@@ -270,20 +166,27 @@ def findEigenAriadne(A):
     :param A: The matrix we are interested in.
     :return: The eigenvectors and eigenvalues of A
     '''
-    X = copyAriadne(A)
-    pr = precision(128)
-    pQ = FloatMPApproximationMatrix.identity(A.row_size(), pr)
+    eigenValList = []
+    eigenVectList = []
 
-    # Iterate to converge to the correct eigenvalues and eigenvectors.
-    for i in range(50):
-        Q, R = DecompositionQRAriadne(X)
-        pQ = pQ * Q
-        X = R * Q
+    APrime = copyAriadne(A)
 
+    P, B = DecompositionQRAriadne(APrime)
+    # print("B", B)
+    eigenVal = getDiagonalElementAriadne(B)
+    # print(v)
+    # print("A*v", A*v)
+    # print("l*v", eigenVal[0]*v)
+    eigenValList.append(eigenVal)
+    eigenVectList.append(getColumn(0,P))
 
-    eigenVal = getDiagonalElementAriadne(X)
-    # TODO: Keep the closest one to a given estimation.
-    return eigenVal, pQ
+    for i in range(1, A.row_size()):
+        l, v = inverse_power_ariadne(A, eigenVal[i], getColumn(i, P))
+        # print("A*v", A * v - l*v)
+        # print("l*v", l * v)
+        eigenValList.append(l)
+        eigenVectList.append(v)
+    return eigenValList, eigenVectList
 
 
 # A = np.array([[52, 30, 49, 28], [30, 50, 8, 44], [49, 8, 46, 16], [28, 44, 16, 22]])
@@ -297,10 +200,16 @@ def findEigenAriadne(A):
 
 # print(A)
 # print(findEigen(A))
-# A = FloatDPApproximationMatrix([[12,-51,4], [6,167,-68], [-4,24,-41]], dp)
+#
 # A = FloatDPApproximationMatrix([[52, 30, 49, 28], [30, 50, 8, 44], [49, 8, 46, 16], [28, 44, 16, 22]], dp)
 # # print(A)
+pr = precision(128)
+# A = FloatMPBoundsMatrix([[2,6,4],[4,-1,0],[4,0,-3]], pr)
+# A = FloatMPApproximationMatrix([[12,-51,4], [6,167,-68], [-4,24,-41]], pr)
+A = FloatMPApproximationMatrix([[3,1],[1,3]], pr)
 # eigenval, eigenvect = findEigenAriadne(A)
+
+# A = FloatMPApproximationMatrix([[1,2,3],[4,5,6],[7,8,9]], pr)
 # print("$$$$$$$$$$$$$$$$$$$")
 # # print(eigenval)
 # # print(eigenvect)
@@ -309,6 +218,11 @@ def findEigenAriadne(A):
 # print(getColumn(0, eigenvect))
 # print(eigenval[0]*getColumn(0, eigenvect))
 # print(A*getColumn(0, eigenvect))
+
+Q, R = findEigenAriadne(A)
+# print("Q*R-A", (Q*R)-A)
+# print("Q", Q)
+# print("R", R)
 
 # print(eigenVal[0])
 # print(np.array([eigenVect[:,0]]).T)
