@@ -64,21 +64,21 @@ class MatrixEigen:
         """
         Compute and display all of the eigenValues and eigenVectors.
         """
-        try:
-            eigenValues, eigenVectors = Householder.findEigenAriadne(self.selectedMatrix)
+        # try:
+        eigenValues, eigenVectors = Householder.findEigenAriadne(self.selectedMatrix)
 
-            self.eigenValuesList = []
-            self.eigenVectorList = []
-            for i in range(len(eigenValues)):
-                # Compute an interval for all of the eigenValues and eigenvectors.
-                eigenVect, eigenVal = IntervalNewtonMethod.intervalNewtonMethods(Householder.getColumn(i, eigenVectors),
+        self.eigenValuesList = []
+        self.eigenVectorList = []
+        for i in range(len(eigenValues)):
+            # Compute an interval for all of the eigenValues and eigenvectors.
+            eigenVect, eigenVal = IntervalNewtonMethod.intervalNewtonMethods(eigenVectors[i],
                                                                                  eigenValues[i], self.selectedMatrix)
-                self.eigenValuesList.append(eigenVal)
-                self.eigenVectorList.append(eigenVect)
-            self.displayFoundEigen()
-        except:
-            # Throw an error if no matrix has been selected.
-            self.textArea.printInOutputArea("Error: No matrix selected")
+            self.eigenValuesList.append(eigenVal)
+            self.eigenVectorList.append(eigenVect)
+        self.displayFoundEigen()
+        # except:
+        #     Throw an error if no matrix has been selected.
+            # self.textArea.printInOutputArea("Error: No matrix selected")
 
     def oneEigenButtonActive(self):
         """

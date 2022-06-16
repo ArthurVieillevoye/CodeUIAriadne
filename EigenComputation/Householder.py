@@ -18,7 +18,7 @@ from pyariadne import *
 
 def inverse_power_ariadne(A, lamb, v):
     tolerance = FloatMPApproximation("0.000001", A[0,0].precision())
-    print(getMaxValueOfVector(A*v-lamb*v))
+    # print(getMaxValueOfVector(A*v-lamb*v))
     nv = v
     counter = 0
     while cast_exact(getMaxValueOfVector(A*nv-lamb*nv)) > cast_exact(tolerance) and counter < 10:
@@ -130,26 +130,20 @@ def DecompositionQRAriadne(A):
     :return: the  and R matrices that comes from the A decomposition.
     '''
     # Complexity n×n est en : (3/4)*n^3
-    n = A.column_size()      # Size of the A matrix
+    n = A.column_size()
 
     B = copyAriadne(A)
 
     P = FloatMPApproximationMatrix.identity(n, precision(128))
-    tolerance = FloatMPApproximation("0.00001", precision(128))
-    print(cast_exact(abs(getMaxValueBottomTriangularMatrix(B))))
-    while cast_exact(getMaxValueBottomTriangularMatrix(B)) > cast_exact(tolerance):
-    # for i in range(5):
-        # Compute the Q value for the matrix newA
+    tolerance = FloatMPApproximation(0.0000000001, precision(128))
+    counter = 0
+    while cast_exact(getMaxValueBottomTriangularMatrix(B)) > cast_exact(tolerance) and counter < 300:
         (q, r) = gram_schmidt_orthogonalisation(B)
-        print("q = ", q)
         P = P * q
         B = r * q  # Recompute the newA.
 
-        # print("B", str(B))
-        # print('accuracy', cast_exact(abs(getMaxValueBottomTriangularMatrix(B))))
-
-    print("tmp", A-(P*B*transpose(P)))
-    return P, B
+        counter +=1
+    return P, B, counter
 
 
 def getDiagonalElementAriadne(matrix):
@@ -159,7 +153,7 @@ def getDiagonalElementAriadne(matrix):
     pr = precision(128)
     return FloatMPApproximationVector(diag, pr)
 
-def findEigenAriadne(A):
+def findEigenAriadne(A, precision):
     '''
     Find the eigenvalues and the eigenvector for the matrix A.
     Uses the QR decomposition in order to find them.
@@ -171,22 +165,18 @@ def findEigenAriadne(A):
 
     APrime = copyAriadne(A)
 
-    P, B = DecompositionQRAriadne(APrime)
-    # print("B", B)
+    P, B, counter = DecompositionQRAriadne(APrime, precision)
     eigenVal = getDiagonalElementAriadne(B)
-    # print(v)
-    # print("A*v", A*v)
-    # print("l*v", eigenVal[0]*v)
-    eigenValList.append(eigenVal)
+
+    eigenValList.append(eigenVal[0])
     eigenVectList.append(getColumn(0,P))
 
     for i in range(1, A.row_size()):
         l, v = inverse_power_ariadne(A, eigenVal[i], getColumn(i, P))
-        # print("A*v", A * v - l*v)
-        # print("l*v", l * v)
         eigenValList.append(l)
         eigenVectList.append(v)
-    return eigenValList, eigenVectList
+
+    return eigenValList, eigenVectList, counter
 
 
 # A = np.array([[52, 30, 49, 28], [30, 50, 8, 44], [49, 8, 46, 16], [28, 44, 16, 22]])
@@ -203,14 +193,18 @@ def findEigenAriadne(A):
 #
 # A = FloatDPApproximationMatrix([[52, 30, 49, 28], [30, 50, 8, 44], [49, 8, 46, 16], [28, 44, 16, 22]], dp)
 # # print(A)
-pr = precision(128)
-# A = FloatMPBoundsMatrix([[2,6,4],[4,-1,0],[4,0,-3]], pr)
-# A = FloatMPApproximationMatrix([[12,-51,4], [6,167,-68], [-4,24,-41]], pr)
-A = FloatMPApproximationMatrix([[3,1],[1,3]], pr)
+# pr = precision(128)
+# A = FloatMPApproximationMatrix([[2,6,4],[4,-1,0],[4,0,-3]], pr)
+# A = FloatMPApproximationMatrix([[12,-51,14,11], [16,167,-68,11], [-14,24,-41,11], [-4,24,-41,11]], precision(128))
+# A = FloatMPApproximationMatrix([[12,-51,4, 32], [6,167,-68, 28], [-4,24,-41, 63]], pr)
+# A = FloatMPApproximationMatrix([[12,-51,14,11], [16,167,-68,11], [-14,24,-41,11], [-4,24,-41,11]], precision(128))
+# A = FloatMPApproximationMatrix([[3,1],[1,3]], pr)
+
 # eigenval, eigenvect = findEigenAriadne(A)
 
 # A = FloatMPApproximationMatrix([[1,2,3],[4,5,6],[7,8,9]], pr)
 # print("$$$$$$$$$$$$$$$$$$$")
+# A = FloatMPApproximationMatrix([[52, 30, 49, 28], [30, 50, 8, 44], [49, 8, 46, 16], [28, 44, 16, 22]], pr)
 # # print(eigenval)
 # # print(eigenvect)
 #
@@ -219,7 +213,10 @@ A = FloatMPApproximationMatrix([[3,1],[1,3]], pr)
 # print(eigenval[0]*getColumn(0, eigenvect))
 # print(A*getColumn(0, eigenvect))
 
-Q, R = findEigenAriadne(A)
+# val, vect, tmp = findEigenAriadne(A, 0.000001)
+# # print(val[0])
+# print(A*vect[0]-val[0]*vect[0])
+# print(tmp)
 # print("Q*R-A", (Q*R)-A)
 # print("Q", Q)
 # print("R", R)
